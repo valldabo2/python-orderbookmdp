@@ -1,0 +1,100 @@
+========
+Overview
+========
+
+.. start-badges
+
+.. list-table::
+    :stub-columns: 1
+
+    * - docs
+      - |docs|
+    * - tests
+      - | |travis| |appveyor| |requires|
+        | |codecov|
+    * - package
+      - | |version| |wheel| |supported-versions| |supported-implementations|
+        | |commits-since|
+
+.. |docs| image:: https://readthedocs.org/projects/python-orderbookmdp/badge/?style=flat
+    :target: https://readthedocs.org/projects/python-orderbookmdp
+    :alt: Documentation Status
+
+.. |travis| image:: https://travis-ci.org/valldabo2/python-orderbookmdp.svg?branch=master
+    :alt: Travis-CI Build Status
+    :target: https://travis-ci.org/valldabo2/python-orderbookmdp
+
+.. |appveyor| image:: https://ci.appveyor.com/api/projects/status/github/valldabo2/python-orderbookmdp?branch=master&svg=true
+    :alt: AppVeyor Build Status
+    :target: https://ci.appveyor.com/project/valldabo2/python-orderbookmdp
+
+.. |requires| image:: https://requires.io/github/valldabo2/python-orderbookmdp/requirements.svg?branch=master
+    :alt: Requirements Status
+    :target: https://requires.io/github/valldabo2/python-orderbookmdp/requirements/?branch=master
+
+.. |codecov| image:: https://codecov.io/github/valldabo2/python-orderbookmdp/coverage.svg?branch=master
+    :alt: Coverage Status
+    :target: https://codecov.io/github/valldabo2/python-orderbookmdp
+
+.. |version| image:: https://img.shields.io/pypi/v/orderbookmdp.svg
+    :alt: PyPI Package latest release
+    :target: https://pypi.python.org/pypi/orderbookmdp
+
+.. |commits-since| image:: https://img.shields.io/github/commits-since/valldabo2/python-orderbookmdp/v0.1.0.svg
+    :alt: Commits since latest release
+    :target: https://github.com/valldabo2/python-orderbookmdp/compare/v0.1.0...master
+
+.. |wheel| image:: https://img.shields.io/pypi/wheel/orderbookmdp.svg
+    :alt: PyPI Wheel
+    :target: https://pypi.python.org/pypi/orderbookmdp
+
+.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/orderbookmdp.svg
+    :alt: Supported versions
+    :target: https://pypi.python.org/pypi/orderbookmdp
+
+.. |supported-implementations| image:: https://img.shields.io/pypi/implementation/orderbookmdp.svg
+    :alt: Supported implementations
+    :target: https://pypi.python.org/pypi/orderbookmdp
+
+
+.. end-badges
+
+A package for simulating a limit order market as an OpenAI env.
+
+* Free software: MIT license
+
+Installation
+============
+
+::
+
+    pip install orderbookmdp
+
+Documentation
+=============
+
+https://python-orderbookmdp.readthedocs.io/
+
+Development
+===========
+
+To run the all tests run::
+
+    tox
+
+Note, to combine the coverage data from all the tox environments run:
+
+.. list-table::
+    :widths: 10 90
+    :stub-columns: 1
+
+    - - Windows
+      - ::
+
+            set PYTEST_ADDOPTS=--cov-append
+            tox
+
+    - - Other
+      - ::
+
+            PYTEST_ADDOPTS=--cov-append tox
