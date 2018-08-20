@@ -1,4 +1,6 @@
 language: python
+python:
+    - "3.6"
 sudo: false
 cache: pip
 env:
@@ -10,7 +12,7 @@ env:
     - TOXENV=docs
 matrix:
   include:
-    - python: '3.6.5'
+    - python: '3.6'
       env:
         - TOXENV=py36,report,codecov
 before_install:
