@@ -17,7 +17,7 @@ import abc
 import numpy as np
 from custom_inherit import DocInheritMeta
 
-import orderbookmdp._orderbookmdp
+from orderbookmdp._orderbookmdp import CyOrderBook
 from orderbookmdp.order_book.constants import BUY
 from orderbookmdp.order_book.constants import EXT_ID
 from orderbookmdp.order_book.constants import OIB_ID
@@ -50,8 +50,10 @@ def get_ob(ob_type: str, price_levels_type: str, price_level_type: str) -> Order
     """
     if ob_type == 'py':
         return PyOrderBook(price_levels_type, price_level_type)
-    if ob_type == 'cy_order_book':
-        return orderbookmdp._orderbookmdp.CyOrderBook(price_levels_type, price_level_type)
+    if ob_type == 'cy':
+        return CyOrderBook(price_levels_type, price_level_type)
+    else:
+        raise NotImplementedError(ob_type)
 
 
 class Market(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True)):
@@ -145,6 +147,7 @@ class ExternalMarket(Market):
             If the message is an external message
 
         """
+
         trades, order_in_book = [], None
         mess_type = mess.type
 

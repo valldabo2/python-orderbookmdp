@@ -36,14 +36,6 @@ orderbookmdp.rl.env\_utils module
     :undoc-members:
     :show-inheritance:
 
-orderbookmdp.rl.ewma module
----------------------------
-
-.. automodule:: orderbookmdp.rl.ewma
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 orderbookmdp.rl.market\_env module
 ----------------------------------
 

@@ -141,7 +141,7 @@ class MarketOrderEnv(ExternalMarketEnv):
             self.render_app.funds = deque(maxlen=self.price_n)
             self.render_app.capital_change = deque(maxlen=self.price_n)
 
-        return obs
+        return obs, self.get_private_variables()
 
     @property
     def action_space(self):

@@ -8,7 +8,7 @@ import pandas as pd
 import requests
 from custom_inherit import DocInheritMeta
 
-import orderbookmdp._orderbookmdp
+from orderbookmdp._orderbookmdp import CyExternalMarket
 from orderbookmdp.order_book.constants import BUY
 from orderbookmdp.order_book.constants import SELL
 from orderbookmdp.order_book.market import ExternalMarket
@@ -31,7 +31,9 @@ def get_market(market_type, **kwargs):
     if market_type == 'pyext':
         return ExternalMarket(**kwargs)
     elif market_type == 'cyext':
-        return orderbookmdp._orderbookmdp.CyExternalMarket(**kwargs)
+        return CyExternalMarket(**kwargs)
+    else:
+        raise NotImplementedError(market_type)
 
 
 class MarketEnv(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True)):
@@ -224,7 +226,7 @@ class MarketEnv(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True
             self.render_app.__setattr__('buybook', {})
             self.render_app.__setattr__('trades_', [])
 
-        return obs
+        return obs, self.get_private_variables()
 
     def render(self):
         """ Renders the environment in a dash app.

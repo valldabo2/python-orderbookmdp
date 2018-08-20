@@ -4,7 +4,7 @@ from unittest import TestCase
 
 import numpy as np
 
-import orderbookmdp._orderbookmdp
+from orderbookmdp._orderbookmdp import CyExternalMarket
 from orderbookmdp.order_book.constants import BUY
 from orderbookmdp.order_book.constants import EXT_ID
 from orderbookmdp.order_book.constants import SELL
@@ -102,8 +102,9 @@ class TestExternalMarket(TestCase):
         if m_type == 'py':
             m = ExternalMarket(tick_size=0.01, ob_type='py',
                                price_level_type=price_level_type, price_levels_type=price_levels_type)
-        elif m_type == 'cy_order_book':
-            m = orderbookmdp._orderbookmdp.CyExternalMarket()
+        elif m_type == 'cy':
+            m = CyExternalMarket(tick_size=0.01, ob_type='py',
+                                 price_level_type=price_level_type, price_levels_type=price_levels_type)
 
         m.fill_snap(b_lvl_3)
         snap = m.ob.price_levels.get_snap()
@@ -119,8 +120,9 @@ class TestExternalMarket(TestCase):
         if m_type == 'py':
             m = ExternalMarket(tick_size=0.01, ob_type='py',
                                price_level_type=price_level_type, price_levels_type=price_levels_type)
-        elif m_type == 'cy_order_book':
-            m = orderbookmdp._orderbookmdp.CyExternalMarket()
+        elif m_type == 'cy':
+            m = CyExternalMarket(tick_size=0.01, ob_type='py',
+                                 price_level_type=price_level_type, price_levels_type=price_levels_type)
 
         m.fill_snap(e_lvl_3)
         snap = m.ob.price_levels.get_snap()
@@ -135,11 +137,13 @@ class TestExternalMarket(TestCase):
 
     def price_level(self, corr, price, side, snap, m):
         price_int = to_int(price, multiplier)
+
         if hasattr(m.ob.price_levels, 'max_price'):
             if m.ob.price_levels.min_price < price_int < m.ob.price_levels.max_price:
                 market = snap[side][price_int]
                 diff = corr - market
-                assert abs(diff) < 10e-4, 'Diff :{:.2e} in price:{}'.format(diff, price)
+                assert abs(diff) < 10e-4, 'Diff :{:.2e} in price:{}'.format(diff, price)  # TODO floating point error large in cython
+                # print(diff, price)
         else:
             market = snap[side][price_int]
             diff = corr - market
@@ -227,10 +231,9 @@ class TestExternalMarket(TestCase):
 
     def test_fill_snap_cymarket_cylist_cydeque(self):
         b_lvl_3, e_lvl_3, messages = load()
-        self.fill_snap('cy_order_book', 'cydeque', 'cylist', b_lvl_3, e_lvl_3)
+        self.fill_snap('cy', 'cydeque', 'cylist', b_lvl_3, e_lvl_3)
 
     def test_send_message_cymarket_cylist_cydeque(self):
         b_lvl_3, e_lvl_3, messages = load()
-        m = orderbookmdp._orderbookmdp.CyExternalMarket(price_level_type='cydeque',
-                                                        price_levels_type='cylist')
+        m = CyExternalMarket(price_level_type='cydeque', price_levels_type='cylist')
         self.messages(m, b_lvl_3, e_lvl_3, messages)

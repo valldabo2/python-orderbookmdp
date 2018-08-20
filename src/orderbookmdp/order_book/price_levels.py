@@ -5,7 +5,7 @@ from bintrees import FastAVLTree
 from bintrees import FastRBTree
 from sortedcontainers import SortedDict
 
-import orderbookmdp._orderbookmdp
+from orderbookmdp._orderbookmdp import CyQeuePriceLevel
 from orderbookmdp.order_book.constants import BUY
 from orderbookmdp.order_book.constants import SELL
 from orderbookmdp.order_book.price_level import DequeLevel
@@ -31,7 +31,9 @@ def get_price_level(price_level_type: str) -> PriceLevel:
     elif price_level_type == 'deque':
         return DequeLevel
     elif price_level_type == 'cydeque':
-        return orderbookmdp._orderbookmdp.CyQeuePriceLevel
+        return CyQeuePriceLevel
+    else:
+        raise NotImplementedError(price_level_type)
 
 
 class PriceLevels(abc.ABC):
@@ -237,11 +239,11 @@ class SortedDictPriceLevels(PriceLevels):
         for price in self.price_levels[side]:
             yield price
 
-    def get_quotes(self) -> tuple:
+    def get_quotes(self) -> list:
         ask, bid = self.get_ask(), self.get_bid()
         bid_v = self.price_levels[BUY][bid].size
         ask_v = self.price_levels[SELL][ask].size
-        return ask, ask_v, bid, bid_v  # Quotes : (ask, ask_v, bid, bid_v)
+        return np.array([ask, ask_v, bid, bid_v])  # Quotes : (ask, ask_v, bid, bid_v)
 
 
 class RBTreePriceLevels(SortedDictPriceLevels):
@@ -357,8 +359,8 @@ class ListPriceLevels(PriceLevels):
             yield self.get_price(index)
         return
 
-    def get_quotes(self) -> tuple:
+    def get_quotes(self) -> list:
         ask, bid = self.get_ask(), self.get_bid()
         bid_v = self.price_level_list[self.bid_index].size
         ask_v = self.price_level_list[self.ask_index].size
-        return ask, ask_v, bid, bid_v  # Quotes : (ask, ask_v, bid, bid_v)
+        return np.array([ask, ask_v, bid, bid_v])  # Quotes : (ask, ask_v, bid, bid_v)

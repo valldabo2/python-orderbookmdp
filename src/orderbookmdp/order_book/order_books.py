@@ -69,7 +69,7 @@ class OrderBook(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True
         self.order_id = 0
 
     @abc.abstractmethod
-    def limit(self, price: float, side: int, size: float, trader_id: int) -> (list, tuple):
+    def limit(self, price: int, side: int, size: float, trader_id: int) -> (list, tuple):
         """
         Handles a limit order sent to the order book. Matches the limit order if possible, otherwise puts it in the order book.
 
@@ -167,7 +167,7 @@ class OrderBook(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True
 class PyOrderBook(OrderBook):
     """An implementation of the abstract class :py:class:`OrderBook`.
     """
-    def limit(self, price: float, side: int, size: float, trader_id: int, time: str) -> (list, tuple):
+    def limit(self, price: int, side: int, size: float, trader_id: int, time: str) -> (list, tuple):
         trades = []
         if side == BUY:
             if self.price_levels.exist_sell_orders():

@@ -51,8 +51,8 @@ class SpreadEnv(ExternalMarketEnv, OrderTrackingEnv):
     """
 
     def __init__(self, market_type='cyext',
-                 market_setup=dict(tick_size=0.01, ob_type='cy_order_book', order_level_type='cydeque',
-                                   order_levels_type='cylist'), initial_funds=10000,
+                 market_setup=dict(tick_size=0.01, ob_type='cy_order_book', price_level_type='cydeque',
+                                   price_levels_type='cylist'), initial_funds=10000,
                  order_paths='../data/feather/', snapshot_paths='../data/snap_json/', T_ID=1):
         super(SpreadEnv, self).__init__(market_type, market_setup, initial_funds, order_paths, snapshot_paths, T_ID)
         self.trades = SortedTradesLevel(), SortedTradesLevel()
@@ -381,9 +381,9 @@ class SpreadEnv(ExternalMarketEnv, OrderTrackingEnv):
 
     def reset(self, market=None):
         obs = super(SpreadEnv, self).reset(market)
-        # self.orders_in_book = get_price_levels(market_setup['order_levels_type'], market_setup['order_level_type'])
+        # self.orders_in_book = get_price_levels(market_setup['price_levels_type'], market_setup['price_level_type'])
         kwargs = deepcopy(self._market_setup)
-        kwargs['order_levels_type'] = 'fast_avl'
+        kwargs['price_levels_type'] = 'fast_avl'
         if kwargs.get('max_price'):
             kwargs['max_price'] = int(kwargs['max_price'] * self.market.multiplier)
             kwargs['min_price'] = int(kwargs['min_price'] * self.market.multiplier)
@@ -419,8 +419,8 @@ class DistEnv(SpreadEnv):
     """
 
     def __init__(self, pdf_type='beta', market_type='cyext',
-                 market_setup=dict(tick_size=0.01, ob_type='cy_order_book', order_level_type='cydeque',
-                                   order_levels_type='cylist'), initial_funds=10000,
+                 market_setup=dict(tick_size=0.01, ob_type='cy_order_book', price_level_type='cydeque',
+                                   price_levels_type='cylist'), initial_funds=10000,
                  order_paths='../data/feather/', snapshot_paths='../data/snap_json/', T_ID=1):
 
         super(DistEnv, self).__init__(market_type, market_setup, initial_funds,
@@ -430,7 +430,8 @@ class DistEnv(SpreadEnv):
         self.n_tick_levels = 40
         self.n_price_levels = 10
         self.x = np.linspace(0.01, 1 - 0.01, self.n_price_levels)
-        self.x_shift = np.arange(start=0, stop=self.n_tick_levels, step=int(self.n_tick_levels / self.n_price_levels))
+        self.x_shift = np.arange(start=0, stop=self.n_tick_levels, step=int(self.n_tick_levels / self.n_price_levels),
+                                 dtype=np.int)
 
     def funds_dist(self, a, b):
         probs = self.dist_pdf(self.x, a, b)
@@ -460,9 +461,9 @@ class DistEnv(SpreadEnv):
         self.prev_ask = ask
         self.prev_bid = bid
 
-        buy_prices = rel_bid_price - self.x_shift
+        buy_prices = int(rel_bid_price) - self.x_shift
         buy_sizes = buy_funds_dist * self.market.multiplier / buy_prices
-        sell_prices = rel_ask_price + self.x_shift
+        sell_prices = int(rel_ask_price) + self.x_shift
         sell_sizes = sell_funds_dist * self.market.multiplier / sell_prices
 
         if self.render_app:

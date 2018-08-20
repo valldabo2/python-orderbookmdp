@@ -1,9 +1,7 @@
-
-def longest(args):
+def long(args):
     return max(args, key=len)
 
 from collections import deque
-
 import numpy as np
 from cpython cimport list
 
@@ -43,17 +41,20 @@ cdef int SO_EXT_ID = 2
 
 cdef class CyQeuePriceLevel:
 
-    cdef public float size
+    cdef float size
     cdef public object orders
 
     def __init__(self):
-        self.size = 0
+        self.size = 0.0
         self.orders = deque()
 
     cpdef append(self, list order):
         self._add(order)
         self.size += order[O_SIZE]
 
+    @property
+    def size(self):
+        return self.size
 
     cdef _add(self, list order):
         """Example function with PEP 484 type annotations.
@@ -305,7 +306,7 @@ cdef class CyListPriceLevels:
     cdef int ask_index
     cdef list price_level_list
 
-    def __init__(self, price_level_type, tick_size=0.01, max_price=13000, min_price=5000):
+    def __init__(self, price_level_type, tick_size=0.01, max_price=13000, min_price=5000, **kwargs):
 
         self.tick_size = tick_size
         self.tick_dec = int(np.log10(1/self.tick_size))

@@ -28,10 +28,10 @@ class OrderTrackingEnv(MarketEnv):
         """ Sets up the orders in book to keep track of.
         """
         super(OrderTrackingEnv, self).__init__(market_type, market_setup, initial_funds, T_ID)
-        # self.orders_in_book = get_price_levels(market_setup['order_levels_type'], market_setup['order_level_type'])
+        # self.orders_in_book = get_price_levels(market_setup['price_levels_type'], market_setup['price_level_type'])
 
         kwargs = deepcopy(self._market_setup)
-        kwargs['order_levels_type'] = 'fast_avl'
+        kwargs['price_levels_type'] = 'fast_avl'
         multiplier = 10 ** np.log10(1 / kwargs['tick_size'])
         if kwargs.get('max_price'):
             kwargs['max_price'] = int(kwargs['max_price'] * multiplier)
@@ -115,7 +115,6 @@ class ExternalMarketEnv(MarketEnv):
                 if len(trades_) > 0:
                     trades.extend(trades_)
                 quotes = self.market.ob.price_levels.get_quotes()
-
                 if quote_differs(prev_quotes, quotes):
                     self.quotes = quotes
                     return trades, done
@@ -133,7 +132,7 @@ class ExternalMarketEnv(MarketEnv):
 
         observation : tuple
         """
-        obs = MarketEnv.reset(self, market=market)
+        MarketEnv.reset(self, market=market)
 
         if self.snap is None:  # Initial filling
             mess, snap = self.os.__next__()
@@ -142,5 +141,8 @@ class ExternalMarketEnv(MarketEnv):
         else:
             snap = self.snap  # Fill from new snap
         self.market.fill_snap(snap)
+        self.quotes = self.market.ob.price_levels.get_quotes()
+
+        obs = self.quotes
 
         return obs
