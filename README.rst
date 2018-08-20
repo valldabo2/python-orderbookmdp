@@ -16,8 +16,8 @@ Overview
       - | |version| |wheel| |supported-versions| |supported-implementations|
         | |commits-since|
 
-.. |docs| image:: https://readthedocs.org/projects/python-orderbookmdp/badge/?style=flat
-    :target: https://readthedocs.org/projects/python-orderbookmdp
+.. |docs| image:: https://python-orderbookmdp.readthedocs.io/en/latest/?badge=latest
+    :target: https://python-orderbookmdp.readthedocs.io/en/latest/
     :alt: Documentation Status
 
 .. |travis| image:: https://travis-ci.org/valldabo2/python-orderbookmdp.svg?branch=master

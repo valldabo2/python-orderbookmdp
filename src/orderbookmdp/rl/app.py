@@ -64,7 +64,7 @@ def get_dist_app():
     app = dash.Dash('Trading-App')
     app.layout = layout
 
-    @app.callback(Output('trades', 'figure'), [Input('update4', 'n_intervals')])
+    @app.callback(Output('trades', 'figure'), [Input('update4', 'n_intervals')])  # noqa: EF811
     def update(interval):
         trades = pd.DataFrame(app.trades_, columns=['Time', 'Size', 'Price', 'Side'])
         trades['color'] = 'rgb(255,0,0)'
@@ -88,7 +88,7 @@ def get_dist_app():
         )
         return {'data': [trace], 'layout': layout}
 
-    @app.callback(Output('price', 'figure'), [Input('update', 'n_intervals')])
+    @app.callback(Output('price', 'figure'), [Input('update', 'n_intervals')])  # noqa: EF811
     def update(interval):
         time = list(app.time)
         ask = Scatter(
@@ -108,7 +108,7 @@ def get_dist_app():
 
         return {'data': [bid, ask], 'layout': layout}
 
-    @app.callback(Output('book', 'figure'), [Input('update3', 'n_intervals')])
+    @app.callback(Output('book', 'figure'), [Input('update3', 'n_intervals')])  # noqa: EF811
     def update(interval):
         buy = Bar(
             x=np.log(1 + np.array(list(app.buybook.values()))),
@@ -132,7 +132,7 @@ def get_dist_app():
 
         return {'data': [buy, sell], 'layout': layout}
 
-    @app.callback(Output('portfolio', 'figure'), [Input('update2', 'n_intervals')])
+    @app.callback(Output('portfolio', 'figure'), [Input('update2', 'n_intervals')])  # noqa: EF811
     def update(interval):
         traces = []
         traces.append(Bar(
@@ -233,7 +233,7 @@ def get_portfolio_app():
     app = dash.Dash('Trading-App')
     app.layout = layout
 
-    @app.callback(Output('trades', 'figure'), [Input('update4', 'n_intervals')])
+    @app.callback(Output('trades', 'figure'), [Input('update4', 'n_intervals')])  # noqa: EF811
     def update(interval):
         trades = pd.DataFrame(app.trades_, columns=['Time', 'Size', 'Price', 'Side'])
         trades['color'] = 'rgb(255,0,0)'
@@ -257,7 +257,7 @@ def get_portfolio_app():
         )
         return {'data': [trace], 'layout': layout}
 
-    @app.callback(Output('price', 'figure'), [Input('update', 'n_intervals')])
+    @app.callback(Output('price', 'figure'), [Input('update', 'n_intervals')])  # noqa: EF811
     def update(interval):
         time = list(app.time)
         ask = Scatter(
@@ -287,7 +287,7 @@ def get_portfolio_app():
 
         return {'data': [bid, ask, possession], 'layout': layout}
 
-    @app.callback(Output('portfolio', 'figure'), [Input('update', 'n_intervals')])
+    @app.callback(Output('portfolio', 'figure'), [Input('update', 'n_intervals')])  # noqa: EF811
     def update(interval):
         time = list(app.time)
         capital_change = Scatter(
@@ -303,7 +303,7 @@ def get_portfolio_app():
 
         return {'data': [capital_change], 'layout': layout}
 
-    @app.callback(Output('book', 'figure'), [Input('update3', 'n_intervals')])
+    @app.callback(Output('book', 'figure'), [Input('update3', 'n_intervals')])  # noqa: EF811
     def update(interval):
         buy = Bar(
             x=np.log(1 + np.array(list(app.buybook.values()))),
@@ -371,7 +371,7 @@ def get_multienv_app():
     app = dash.Dash('Trading-App')
     app.layout = layout
 
-    @app.callback(Output('trades', 'figure'), [Input('update4', 'n_intervals')])
+    @app.callback(Output('trades', 'figure'), [Input('update4', 'n_intervals')])  # noqa: EF811
     def update(interval):
         trades = pd.DataFrame(app.trades_, columns=['T_ID', 'TC_ID', 'Price', 'Size', 'O_ID', 'Side', 'Time'])
         trades['color'] = 'rgb(255,0,0)'
@@ -396,7 +396,7 @@ def get_multienv_app():
         )
         return {'data': [trace], 'layout': layout}
 
-    @app.callback(Output('price', 'figure'), [Input('update', 'n_intervals')])
+    @app.callback(Output('price', 'figure'), [Input('update', 'n_intervals')])  # noqa: EF811
     def update(interval):
         time = list(app.time)
         ask = Scatter(
@@ -417,7 +417,7 @@ def get_multienv_app():
 
         return {'data': [bid, ask], 'layout': layout}
 
-    @app.callback(Output('book', 'figure'), [Input('update3', 'n_intervals')])
+    @app.callback(Output('book', 'figure'), [Input('update3', 'n_intervals')])  # noqa: EF811
     def update(interval):
         buy = Bar(
             y=list(app.buybook.values()),

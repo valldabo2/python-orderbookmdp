@@ -12,11 +12,11 @@ from orderbookmdp.order_book.constants import OIB_SIZE
 from orderbookmdp.order_book.constants import Q_ASK
 from orderbookmdp.order_book.constants import Q_BID
 from orderbookmdp.order_book.constants import SELL
-from orderbookmdp.order_book.constants import TC_ID
 from orderbookmdp.order_book.constants import T_ID
 from orderbookmdp.order_book.constants import T_PRICE
 from orderbookmdp.order_book.constants import T_SIDE
 from orderbookmdp.order_book.constants import T_SIZE
+from orderbookmdp.order_book.constants import TC_ID
 from orderbookmdp.order_book.order_types import limit_message
 from orderbookmdp.rl.app import get_multienv_app
 from orderbookmdp.rl.dist_envs import DistEnv
@@ -277,7 +277,6 @@ class MultiAgentOrderEnv(MarketEnv):
                 # Update order tracking of certain agent types
                 if tc_type in order_tracking_types:
                     tc.update_order_tracking(SELL, trade)
-
 
             # Trader sold
             else:
