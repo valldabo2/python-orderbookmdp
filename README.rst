@@ -13,8 +13,7 @@ Overview
       - | |travis| |appveyor| |requires|
         | |codecov|
     * - package
-      - | |version| |wheel| |supported-versions| |supported-implementations|
-        | |commits-since|
+      - | |version| |supported-versions| |supported-implementations|
 
 .. |docs| image:: https://python-orderbookmdp.readthedocs.io/en/latest/?badge=latest
     :target: https://python-orderbookmdp.readthedocs.io/en/latest/
@@ -38,15 +37,7 @@ Overview
 
 .. |version| image:: https://img.shields.io/pypi/v/orderbookmdp.svg
     :alt: PyPI Package latest release
-    :target: https://pypi.python.org/pypi/orderbookmdp
-
-.. |commits-since| image:: https://img.shields.io/github/commits-since/valldabo2/python-orderbookmdp/v0.1.0.svg
-    :alt: Commits since latest release
-    :target: https://github.com/valldabo2/python-orderbookmdp/compare/v0.1.0...master
-
-.. |wheel| image:: https://img.shields.io/pypi/wheel/orderbookmdp.svg
-    :alt: PyPI Wheel
-    :target: https://pypi.python.org/pypi/orderbookmdp
+    :target: https://pypi.python.org/pypi/orderbookmdp/
 
 .. |supported-versions| image:: https://img.shields.io/pypi/pyversions/orderbookmdp.svg
     :alt: Supported versions

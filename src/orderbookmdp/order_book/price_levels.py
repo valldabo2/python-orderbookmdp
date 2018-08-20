@@ -1,8 +1,8 @@
 import abc
 
 import numpy as np
-from bintrees.cython_trees import FastAVLTree
-from bintrees.cython_trees import FastRBTree
+from bintrees import FastAVLTree
+from bintrees import FastRBTree
 from sortedcontainers import SortedDict
 
 import orderbookmdp._orderbookmdp
