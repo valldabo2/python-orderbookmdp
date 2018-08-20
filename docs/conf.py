@@ -6,6 +6,42 @@ import os
 import shutil
 import sys
 
+__location__ = os.path.join(os.getcwd(), os.path.dirname(
+    inspect.getfile(inspect.currentframe())))
+
+sys.path.insert(0, os.path.join(__location__, '../src'))
+
+# -- Run sphinx-apidoc ------------------------------------------------------
+# This hack is necessary since RTD does not issue `sphinx-apidoc` before running
+# `sphinx-build -b html . _build/html`. See Issue:
+# https://github.com/rtfd/readthedocs.org/issues/1139
+# DON'T FORGET: Check the box "Install your project inside a virtualenv using
+# setup.py install" in the RTD Advanced Settings.
+# Additionally it helps us to avoid running apidoc manually
+
+try:  # for Sphinx >= 1.7
+    from sphinx.ext import apidoc
+except ImportError:
+    from sphinx import apidoc
+
+output_dir = __location__
+module_dir = os.path.join(__location__[:-5], "src/orderbookmdp")
+
+try:
+    import sphinx
+    from distutils.version import LooseVersion
+
+    cmd_line_template = "sphinx-apidoc -f -o {outputdir} {moduledir}"
+    cmd_line = cmd_line_template.format(outputdir=output_dir, moduledir=module_dir)
+
+    args = cmd_line.split(" ")
+    if LooseVersion(sphinx.__version__) >= LooseVersion('1.7'):
+        args = args[1:]
+
+    apidoc.main(args)
+except Exception as e:
+    print("Running `sphinx-apidoc` failed!\n{}".format(e))
+
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
