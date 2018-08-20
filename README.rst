@@ -10,7 +10,7 @@ Overview
     * - docs
       - |docs|
     * - tests
-      - | |travis| |appveyor| |requires|
+      - | |travis| |requires|
         | |codecov|
     * - package
       - | |version| |supported-versions| |supported-implementations|
@@ -22,10 +22,6 @@ Overview
 .. |travis| image:: https://travis-ci.org/valldabo2/python-orderbookmdp.svg?branch=master
     :alt: Travis-CI Build Status
     :target: https://travis-ci.org/valldabo2/python-orderbookmdp
-
-.. |appveyor| image:: https://ci.appveyor.com/api/projects/status/github/valldabo2/python-orderbookmdp?branch=master&svg=true
-    :alt: AppVeyor Build Status
-    :target: https://ci.appveyor.com/project/valldabo2/python-orderbookmdp
 
 .. |requires| image:: https://requires.io/github/valldabo2/python-orderbookmdp/requirements.svg?branch=master
     :alt: Requirements Status
@@ -73,19 +69,3 @@ To run the all tests run::
 
     tox
 
-Note, to combine the coverage data from all the tox environments run:
-
-.. list-table::
-    :widths: 10 90
-    :stub-columns: 1
-
-    - - Windows
-      - ::
-
-            set PYTEST_ADDOPTS=--cov-append
-            tox
-
-    - - Other
-      - ::
-
-            PYTEST_ADDOPTS=--cov-append tox
