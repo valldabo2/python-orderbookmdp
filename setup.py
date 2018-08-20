@@ -40,7 +40,7 @@ if 'TOXENV' in os.environ and 'SETUPPY_CFLAGS' in os.environ:
 
 setup(
     name='orderbookmdp',
-    version='0.1.1',
+    version='0.1.2',
     license='MIT license',
     description='A package for simulating a limit order market as an OpenAI env.',
     long_description='%s\n%s' % (
