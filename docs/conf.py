@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import inspect
 import os
-
+import shutil
+import sys
 
 extensions = [
     'sphinx.ext.autodoc',
@@ -14,6 +16,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
+    'sphinx.ext.mathjax'
 ]
 if os.getenv('SPELLCHECK'):
     extensions += 'sphinxcontrib.spelling',
@@ -48,6 +51,19 @@ html_sidebars = {
 }
 html_short_title = '%s-%s' % (project, version)
 
-napoleon_use_ivar = True
-napoleon_use_rtype = False
-napoleon_use_param = False
+# napoleon_use_ivar = True
+# napoleon_use_rtype = False
+# napoleon_use_param = False
+
+# -- Extension configuration -------------------------------------------------
+
+
+def skip(app, what, name, obj, skip, options):
+    if name == "__init__":
+        return False
+    return skip
+
+def setup(app):
+    app.connect("autodoc-skip-member", skip)
+
+autodoc_member_order = 'bysource'
