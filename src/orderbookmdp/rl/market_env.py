@@ -66,8 +66,8 @@ class MarketEnv(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True
     spec = None
 
     def __init__(self, market_type='cyext',
-                 market_setup=dict(tick_size=0.01, ob_type='cy_order_book', order_level_type='cydeque',
-                                   order_levels_type='cylist', price_as_ints=True), initial_funds=10000, T_ID=1):
+                 market_setup=dict(tick_size=0.01, ob_type='cy_order_book', price_level_type='cydeque',
+                                   price_levels_type='cylist', price_as_ints=True), initial_funds=10000, T_ID=1):
         """
 
         Parameters
@@ -216,6 +216,7 @@ class MarketEnv(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True
 
         obs = self.get_obs()
         self.capital = self.initial_funds
+        self.possession = 0
 
         if self.render_app:
             self.render_app.use_reloader = False
@@ -228,7 +229,7 @@ class MarketEnv(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True
 
         return obs, self.get_private_variables()
 
-    def render(self):
+    def render(self, mode=None):
         """ Renders the environment in a dash app.
 
         """

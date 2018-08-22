@@ -421,7 +421,7 @@ class DistEnv(SpreadEnv):
     def __init__(self, pdf_type='beta', market_type='cyext',
                  market_setup=dict(tick_size=0.01, ob_type='cy_order_book', price_level_type='cydeque',
                                    price_levels_type='cylist'), initial_funds=10000,
-                 order_paths='../data/feather/', snapshot_paths='../data/snap_json/', T_ID=1):
+                 order_paths='../../../data/feather/', snapshot_paths='../../../data/snap_json/', T_ID=1):
 
         super(DistEnv, self).__init__(market_type, market_setup, initial_funds,
                                       order_paths, snapshot_paths, T_ID)

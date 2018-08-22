@@ -24,9 +24,9 @@ class MarketOrderEnv(ExternalMarketEnv):
     """
 
     def __init__(self, market_type='cyext',
-                 market_setup=dict(tick_size=0.01, ob_type='cy_order_book', order_level_type='cydeque',
-                                   order_levels_type='cylist'), initial_funds=10000,
-                 order_paths='../data/feather/', snapshot_paths='../data/snap_json/', T_ID=1):
+                 market_setup=dict(tick_size=0.01, ob_type='cy_order_book', price_level_type='cydeque',
+                                   price_levels_type='cylist'), initial_funds=10000,
+                 order_paths='../../../data/feather/', snapshot_paths='../../../data/snap_json/', T_ID=1):
         super(MarketOrderEnv, self).__init__(market_type, market_setup, initial_funds, order_paths, snapshot_paths,
                                              T_ID)
         self.first_render = True
@@ -104,7 +104,7 @@ class MarketOrderEnv(ExternalMarketEnv):
         """
         return self.possession,
 
-    def render(self):
+    def render(self, mode=None):
         """ Renders a dash app with the portfolio of the agent.
 
         """
