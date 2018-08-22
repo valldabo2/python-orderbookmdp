@@ -50,16 +50,13 @@ class SpreadEnv(ExternalMarketEnv, OrderTrackingEnv):
 
     """
 
-    def __init__(self, market_type='cyext',
-                 market_setup=dict(tick_size=0.01, ob_type='cy_order_book', price_level_type='cydeque',
-                                   price_levels_type='cylist'), initial_funds=10000,
-                 order_paths='../data/feather/', snapshot_paths='../data/snap_json/', T_ID=1):
-        super(SpreadEnv, self).__init__(market_type, market_setup, initial_funds, order_paths, snapshot_paths, T_ID)
+    def __init__(self, **kwargs):
+        super(SpreadEnv, self).__init__(**kwargs)
         self.trades = SortedTradesLevel(), SortedTradesLevel()
 
-        mul = 10 ** np.log10(1 / market_setup['tick_size'])
-        self.min_order_capital = (initial_funds / 100) * mul
-        self.min_change_order_capital = (initial_funds / 100) * mul
+        mul = 10 ** np.log10(1 / self._market_setup['tick_size'])
+        self.min_order_capital = (self.initial_funds / 100) * mul
+        self.min_change_order_capital = (self.initial_funds / 100) * mul
 
         self.max_action = 50
         self.default_action = np.array([1, 1])
@@ -418,13 +415,9 @@ class DistEnv(SpreadEnv):
 
     """
 
-    def __init__(self, pdf_type='beta', market_type='cyext',
-                 market_setup=dict(tick_size=0.01, ob_type='cy_order_book', price_level_type='cydeque',
-                                   price_levels_type='cylist'), initial_funds=10000,
-                 order_paths='../../../data/feather/', snapshot_paths='../../../data/snap_json/', T_ID=1):
+    def __init__(self, pdf_type='beta', **kwargs):
 
-        super(DistEnv, self).__init__(market_type, market_setup, initial_funds,
-                                      order_paths, snapshot_paths, T_ID)
+        super(DistEnv, self).__init__(**kwargs)
 
         self.max_action, self.default_action, self.dist_pdf = get_pdf(pdf_type)
         self.n_tick_levels = 40
@@ -482,12 +475,15 @@ class DistEnv(SpreadEnv):
 
 
 if __name__ == '__main__':
-    env = DistEnv()
-    for i in range(5):
+    env = DistEnv(max_episode_time='2h', max_sequence_skip=100, random_start=True)
+    for i in range(3):
         obs = env.reset()
         done = False
+        print('reset', env.market.time)
         while not done:
             action = env.action_space.sample()
             obs, reward, done, info = env.step(action)
             env.render()
+        print('done', env.market.time)
+
     env.close()

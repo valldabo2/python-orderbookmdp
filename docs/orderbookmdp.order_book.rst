@@ -36,14 +36,6 @@ orderbookmdp.order\_book.order\_types module
     :undoc-members:
     :show-inheritance:
 
-orderbookmdp.order\_book.orderstream module
--------------------------------------------
-
-.. automodule:: orderbookmdp.order_book.orderstream
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 orderbookmdp.order\_book.price\_level module
 --------------------------------------------
 

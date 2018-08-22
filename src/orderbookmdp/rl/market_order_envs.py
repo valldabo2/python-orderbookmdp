@@ -23,12 +23,8 @@ class MarketOrderEnv(ExternalMarketEnv):
     """ An environment that only sends a market order of its full funds (BUY) or possession (SELL).
     """
 
-    def __init__(self, market_type='cyext',
-                 market_setup=dict(tick_size=0.01, ob_type='cy_order_book', price_level_type='cydeque',
-                                   price_levels_type='cylist'), initial_funds=10000,
-                 order_paths='../../../data/feather/', snapshot_paths='../../../data/snap_json/', T_ID=1):
-        super(MarketOrderEnv, self).__init__(market_type, market_setup, initial_funds, order_paths, snapshot_paths,
-                                             T_ID)
+    def __init__(self, **kwargs):
+        super(MarketOrderEnv, self).__init__(**kwargs)
         self.first_render = True
 
     def get_messages(self, action: np.array) -> tuple:
@@ -120,7 +116,7 @@ class MarketOrderEnv(ExternalMarketEnv):
         self.render_app.funds.append(self.funds)
         self.render_app.capital_change.append(self.capital / self.initial_funds)
 
-        time.sleep(0.0000001)  # TODO investigate why a halt is n
+        time.sleep(0.001)  # TODO investigate why a halt is n
 
     def seed(self, seed=None):
         pass
@@ -154,12 +150,16 @@ class MarketOrderEnv(ExternalMarketEnv):
 
 
 if __name__ == '__main__':
-    env = MarketOrderEnv()
+    env = MarketOrderEnv(max_sequence_skip=100, max_episode_time='2h', random_start=True)
+    k = 0
     for i in range(5):
         obs = env.reset()
         done = False
+        print('reset', env.market.time)
         while not done:
             action = env.action_space.sample()
+            action = 2
             obs, reward, done, info = env.step(action)
-            env.render()
+            #env.render()
+        print('stops', env.market.time)
     env.close()

@@ -22,6 +22,30 @@ def quote_differs(a, b):
     return False
 
 
+@jit(nopython=True)
+def quote_differs_pct(a, b):
+    """ Numba Jitted version of if quote a and b differs.
+
+    Parameters
+    ----------
+    a : quote
+    b : quote
+
+    Returns
+    -------
+    bool
+        True of quote and and b differs, otherwise false
+    """
+
+    if (pct_change(a[1], b[1]) > 10)  or (pct_change(a[3], b[3]) > 10):
+        return True
+    elif (a[0] != b[0]) or (a[2] != b[2]):
+        return True
+    else:
+        return False
+
+
+@jit(nopython=True)
 def pct_change(new, old):
     """ Percentage change of new and old value.
 

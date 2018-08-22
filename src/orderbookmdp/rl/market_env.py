@@ -65,9 +65,8 @@ class MarketEnv(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True
     reward_range = (-float('inf'), float('inf'))
     spec = None
 
-    def __init__(self, market_type='cyext',
-                 market_setup=dict(tick_size=0.01, ob_type='cy_order_book', price_level_type='cydeque',
-                                   price_levels_type='cylist', price_as_ints=True), initial_funds=10000, T_ID=1):
+    def __init__(self, market_type='cyext', tick_size=0.01, ob_type='cy_order_book', price_level_type='cydeque',
+                 price_levels_type='cylist', initial_funds=10000, T_ID=1, **kwargs):
         """
 
         Parameters
@@ -84,7 +83,8 @@ class MarketEnv(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True
 
         # Market
         self._market_type = market_type
-        self._market_setup = market_setup
+        self._market_setup = dict(tick_size=tick_size, ob_type=ob_type, price_level_type=price_level_type,
+                                  price_levels_type=price_levels_type)
 
         # Init Funds
         self.capital = initial_funds
@@ -217,6 +217,7 @@ class MarketEnv(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True
         obs = self.get_obs()
         self.capital = self.initial_funds
         self.possession = 0
+        self.funds = self.initial_funds
 
         if self.render_app:
             self.render_app.use_reloader = False

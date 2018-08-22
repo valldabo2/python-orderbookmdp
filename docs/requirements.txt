@@ -13,4 +13,6 @@ dash-renderer
 dash-html-components
 dash-core-components
 numba
+more-itertools
+feather-format
 -e .
