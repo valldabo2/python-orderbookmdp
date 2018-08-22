@@ -150,9 +150,10 @@ class MarketOrderEnv(ExternalMarketEnv):
 
 
 if __name__ == '__main__':
-    env = MarketOrderEnv(max_sequence_skip=100, max_episode_time='2h', random_start=True)
+    env = MarketOrderEnv(max_sequence_skip=150, max_episode_time='4h', random_start=False)
     k = 0
-    for i in range(5):
+    t = time.time()
+    for i in range(2):
         obs = env.reset()
         done = False
         print('reset', env.market.time)
@@ -160,6 +161,10 @@ if __name__ == '__main__':
             action = env.action_space.sample()
             action = 2
             obs, reward, done, info = env.step(action)
-            #env.render()
+            #  env.render()
+            k += 1
+            if k % 1000 == 0:
+                print(env.market.time)
         print('stops', env.market.time)
     env.close()
+    print('time', time.time() - t)

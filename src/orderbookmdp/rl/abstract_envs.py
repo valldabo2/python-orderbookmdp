@@ -1,16 +1,18 @@
 from copy import deepcopy
+
 import numpy as np
 import pandas as pd
 from more_itertools import spy
 
+from orderbookmdp.data_all.orderstream import orderstream
 from orderbookmdp.order_book.constants import O_ID
 from orderbookmdp.order_book.constants import O_PRICE
 from orderbookmdp.order_book.constants import O_SIZE
 from orderbookmdp.order_book.constants import T_OID
 from orderbookmdp.order_book.constants import T_SIZE
 from orderbookmdp.order_book.order_books import get_price_levels
-from orderbookmdp.data.orderstream import orderstream
-from orderbookmdp.rl.env_utils import quote_differs, quote_differs_pct
+from orderbookmdp.rl.env_utils import quote_differs  # noqa
+from orderbookmdp.rl.env_utils import quote_differs_pct
 from orderbookmdp.rl.market_env import MarketEnv
 
 
@@ -96,6 +98,8 @@ class ExternalMarketEnv(MarketEnv):
         self.filled = False
         self.snap = None
         self.max_episode_time_delta = pd.to_timedelta(max_episode_time).to_timedelta64()
+        self.check_time_k = 10000
+        self.check_k = 0
 
     def run_until_next_quote_update(self) -> (list, bool):
         """ Sends messages from the external order stream until the quotes of the market has changed.
@@ -119,15 +123,15 @@ class ExternalMarketEnv(MarketEnv):
                     trades.extend(trades_)
                 quotes = self.market.ob.price_levels.get_quotes()
                 try:
+                    self.check_k += 1
                     if quote_differs_pct(prev_quotes, quotes):
                         self.quotes = quotes
                         return trades, done
-                    elif np.datetime64(self.market.time) - self.start_time >= self.max_episode_time_delta:
-                        return trades, True
-
+                    elif self.check_k % self.check_time_k == 0:
+                        if np.datetime64(self.market.time) - self.start_time >= self.max_episode_time_delta:
+                            return trades, True
                 except ZeroDivisionError as e:  # TODO why zero in quotes?
                     return trades, done
-
 
     def reset(self, market=None):
         """ Resets the market with a new snapshot.
@@ -146,7 +150,6 @@ class ExternalMarketEnv(MarketEnv):
 
         if self.snap is None:  # Initial filling
             mess, snap = self.os.__next__()
-            prev_mess = mess
             while snap is None:
                 mess, snap = self.os.__next__()
         else:

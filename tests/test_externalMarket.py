@@ -30,7 +30,7 @@ def load():
         assert beginning_level_3['sequence'] + 1 == messages[0]['sequence']
         assert ending_level_3['sequence'] == messages[-1]['sequence']
     except AssertionError:
-        print("Problem with sample data sequences")
+        print("Problem with sample data_all sequences")
     return beginning_level_3, ending_level_3, messages
 
 

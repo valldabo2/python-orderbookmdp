@@ -416,7 +416,6 @@ class DistEnv(SpreadEnv):
     """
 
     def __init__(self, pdf_type='beta', **kwargs):
-
         super(DistEnv, self).__init__(**kwargs)
 
         self.max_action, self.default_action, self.dist_pdf = get_pdf(pdf_type)
@@ -475,15 +474,22 @@ class DistEnv(SpreadEnv):
 
 
 if __name__ == '__main__':
-    env = DistEnv(max_episode_time='2h', max_sequence_skip=100, random_start=True)
+    env = DistEnv(max_episode_time='4h', max_sequence_skip=150, random_start=True)
     for i in range(3):
+        k = 0
+        t = time.time()
+
         obs = env.reset()
         done = False
         print('reset', env.market.time)
         while not done:
             action = env.action_space.sample()
             obs, reward, done, info = env.step(action)
-            env.render()
+
+            k += 1
+            if k % 1000 == 0:
+                print('orders per sec:{:.1f}'.format(k/(time.time()-t)))
+            #  env.render()
         print('done', env.market.time)
 
     env.close()

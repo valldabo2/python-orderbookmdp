@@ -6,7 +6,7 @@ Subpackages
 
 .. toctree::
 
-    orderbookmdp.data
+    orderbookmdp.data_all
     orderbookmdp.order_book
     orderbookmdp.rl
 

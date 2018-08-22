@@ -37,7 +37,7 @@ def quote_differs_pct(a, b):
         True of quote and and b differs, otherwise false
     """
 
-    if (pct_change(a[1], b[1]) > 10)  or (pct_change(a[3], b[3]) > 10):
+    if (pct_change(a[1], b[1]) > 20) or (pct_change(a[3], b[3]) > 20):  # 20 Percentage diff
         return True
     elif (a[0] != b[0]) or (a[2] != b[2]):
         return True
