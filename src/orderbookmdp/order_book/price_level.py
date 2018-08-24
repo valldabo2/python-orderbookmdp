@@ -81,6 +81,7 @@ class PriceLevel(metaclass=DocInheritMeta(style="numpy", abstract_base_class=Tru
 
         Parameters
         ----------
+        diff
         order: list
             The order to be added.
 

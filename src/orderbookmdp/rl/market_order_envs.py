@@ -22,7 +22,6 @@ from orderbookmdp.rl.market_env import MarketEnv
 class MarketOrderEnv(ExternalMarketEnv):
     """ An environment that only sends a market order of its full funds (BUY) or possession (SELL).
     """
-
     def __init__(self, **kwargs):
         super(MarketOrderEnv, self).__init__(**kwargs)
         self.first_render = True
@@ -64,7 +63,6 @@ class MarketOrderEnv(ExternalMarketEnv):
         """
         for trade in trades:
             if trade[T_ID] == self.T_ID:
-
                 if trade[T_SIDE] == BUY:
                     self.funds -= trade[T_SIZE] * trade[T_PRICE] / self.market.multiplier
                     self.possession += trade[T_SIZE]
@@ -78,7 +76,6 @@ class MarketOrderEnv(ExternalMarketEnv):
         new_capital = self.funds + self.possession * theo_sell_price
         reward = (new_capital - self.capital) / self.capital
         self.capital = new_capital
-
         return reward
 
     def send_messages(self, messages: tuple) -> (list, dict, bool):
@@ -149,22 +146,70 @@ class MarketOrderEnv(ExternalMarketEnv):
         return gym.spaces.Box(low=-np.inf, high=np.inf, shape=(5,), dtype=np.float)
 
 
+class MarketOrderEnvCumReturn(MarketOrderEnv):
+    """
+    Extends the Market Order Enviroment because it uses the cumulative return instead of the return as the reward.
+
+    Attributes
+    ----------
+    cum_return : float
+        The cumulative return
+    """
+    def __init__(self, **kwargs):
+        super(MarketOrderEnvCumReturn, self).__init__(**kwargs)
+        self.cum_return = 1
+
+    def get_reward(self, trades: list):
+        """ The reward is the cumulative return.
+
+        :math:`reward_t = cum\_return_t - 1`
+
+        Where cum_return is:
+
+        :math:`cum\_return_t = 1*\prod_{i=1}^{t} 1+return_t`
+
+        """
+        return_ = MarketOrderEnv.get_reward(self, trades)
+        self.cum_return = self.cum_return*(1+return_)
+        reward = self.cum_return - 1
+        return reward
+
+    def reset(self, market=None):
+        obs = MarketOrderEnv.reset(self, market)
+        self.cum_return = 1
+        return obs
+
+    def get_private_variables(self):
+        """
+
+        Returns
+        -------
+        possession : float
+        cum_return : float
+        """
+        return self.possession, self.cum_return
+
+    @property
+    def observation_space(self):
+        return gym.spaces.Box(low=-np.inf, high=np.inf, shape=(6,), dtype=np.float)
+
+
 if __name__ == '__main__':
-    env = MarketOrderEnv(max_sequence_skip=150, max_episode_time='4h', random_start=False)
+    env = MarketOrderEnvCumReturn(max_sequence_skip=150, max_episode_time='5h', random_start=False)
     k = 0
     t = time.time()
-    for i in range(2):
+    for i in range(4):
         obs = env.reset()
         done = False
         print('reset', env.market.time)
         while not done:
             action = env.action_space.sample()
-            action = 2
+            action = 0
             obs, reward, done, info = env.step(action)
             #  env.render()
             k += 1
-            if k % 1000 == 0:
-                print(env.market.time)
+            if k % 1 == 0:
+                print(env.market.time, reward)
         print('stops', env.market.time)
     env.close()
     print('time', time.time() - t)

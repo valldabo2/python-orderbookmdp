@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 import ujson
 
+MESSAGE_TYPES = {'received', 'done', 'change'}
+
 
 def load_orders(path):
     """
@@ -103,7 +105,8 @@ def orderstream(order_paths='../../../data/feather/', snapshot_paths='../../../d
                         snap_seq = snap['sequence']
 
                     else:
-                        yield order_arr, None
+                        if order_arr.type in MESSAGE_TYPES:
+                            yield order_arr, None
 
                 prev_order_seq = order_seq
                 # prev_time = order_arr.time
@@ -112,37 +115,33 @@ def orderstream(order_paths='../../../data/feather/', snapshot_paths='../../../d
 
 if __name__ == '__main__':
     import time
-    start_time = None
-    start_time_init = False
-    t = time.time()
 
-    for i in range(5):
+    for i in range(1):
+        start_order_id = None
+        start_order_type = None
+        start_order_init = False
+        init_snap = False
+        t = time.time()
         print_ = True
-        ords = orderstream(max_sequence_skip=100, random_start=True)
+        ords = orderstream(max_sequence_skip=100, random_start=False)
         for mess, snap in ords:
             if snap:
-                print('snap')
+                if not init_snap:
+                    print('snap')
+                    init_snap = True
+                else:
+                    break
             else:
                 if print_:
                     print(mess.time)
                     print_ = False
-                if not start_time_init:
-                    start_time = mess.time
-                    start_time_init = True
-                else:
-                    if start_time == mess.time:
-                        break
-        print(time.time() - t)
+                if not start_order_init:
+                    start_order_id = mess.order_id
+                    start_order_type = mess.type
+                    start_order_init = True
 
-    ords = orderstream(max_sequence_skip=100)
-    for mess, snap in ords:
-        if snap:
-            print('snap')
-        else:
-            if not start_time_init:
-                start_time = mess.time
-                start_time_init = True
-            else:
-                if start_time == mess.time:
-                    break
-    print(time.time() - t)
+                else:
+                    if start_order_id == mess.order_id:
+                        if start_order_type == mess.type:
+                            break
+        print(time.time() - t)

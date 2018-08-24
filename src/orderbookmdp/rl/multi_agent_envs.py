@@ -125,6 +125,10 @@ class MultiAgentOrderEnv(MarketEnv):
             reward (float) : amount of reward returned after previous action
             done (boolean): whether the episode has ended, in which case further step() calls will return undefined results
             info (dict): contains auxiliary diagnostic information (helpful for debugging, and sometimes learning)
+
+        Parameters
+        ----------
+        action_dict
         """
         """Example function with PEP 484 type annotations.
 

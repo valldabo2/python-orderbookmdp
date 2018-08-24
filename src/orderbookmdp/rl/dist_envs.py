@@ -489,7 +489,7 @@ if __name__ == '__main__':
             k += 1
             if k % 1000 == 0:
                 print('orders per sec:{:.1f}'.format(k/(time.time()-t)))
-            #  env.render()
+            env.render()
         print('done', env.market.time)
 
     env.close()

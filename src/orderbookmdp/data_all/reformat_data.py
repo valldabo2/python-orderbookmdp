@@ -8,7 +8,14 @@ import ujson
 
 def reformat():
     data_dir = '../../../data/'
-
+    try:
+        os.makedirs(data_dir + 'snap_json/')
+    except FileExistsError:
+        pass
+    try:
+        os.makedirs(data_dir + 'feather/')
+    except FileExistsError:
+        pass
     files = os.listdir(data_dir + 'json/')  # noqa
     snap_files = sorted([filename for filename in files if 'snaps' in filename])
 
@@ -25,7 +32,7 @@ def reformat():
     files = os.listdir(data_dir + 'json/')  # noqa
     mess_files = sorted([filename for filename in files if 'mess' in filename])
 
-    keys = set(['order_type', 'reason', 'sequence', 'side', 'size', 'type', 'price', 'funds', 'order_id', 'time'])
+    keys = {'order_type', 'reason', 'sequence', 'side', 'size', 'type', 'price', 'funds', 'order_id', 'time'}
     price_tick = 0.01
     price_dec = int(np.log10(1 / price_tick))
 
@@ -42,10 +49,19 @@ def reformat():
                 messages.append(ms)
 
         df = pd.DataFrame(messages)
+        try:
+            df['funds'] = df['funds'].astype(float)
+        except KeyError:
+            pass
+        try:
+            df['price'] = df['price'].astype(float).round(price_dec)
+        except KeyError:
+            pass
+        try:
+            df['size'] = df['size'].astype(float)
+        except KeyError:
+            pass
 
-        df['funds'] = df['funds'].astype(float)
-        df['price'] = df['price'].astype(float).round(price_dec)
-        df['size'] = df['size'].astype(float)
         df.replace('sell', 1, inplace=True)
         df.replace('buy', 0, inplace=True)
         df.side = df.side.fillna(-1)

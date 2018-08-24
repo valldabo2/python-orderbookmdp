@@ -140,9 +140,7 @@ class ExternalMarket(Market):
 
         Parameters
         ----------
-        message: SimpleNamespace
-            Can for example be a limit order, market order, cancelation message etc. See :py:mod:`OrderBookRL.order_book.order_types`
-            for different types
+        mess
         external: bool
             If the message is an external message
 

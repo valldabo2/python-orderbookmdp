@@ -2,7 +2,6 @@ from copy import deepcopy
 
 import numpy as np
 import pandas as pd
-from more_itertools import spy
 
 from orderbookmdp.data_all.orderstream import orderstream
 from orderbookmdp.order_book.constants import O_ID
@@ -98,7 +97,7 @@ class ExternalMarketEnv(MarketEnv):
         self.filled = False
         self.snap = None
         self.max_episode_time_delta = pd.to_timedelta(max_episode_time).to_timedelta64()
-        self.check_time_k = 10000
+        self.check_time_k = 10
         self.check_k = 0
 
     def run_until_next_quote_update(self) -> (list, bool):
@@ -121,13 +120,14 @@ class ExternalMarketEnv(MarketEnv):
                 trades_, oib = self.market.send_message(mess, external=True)
                 if len(trades_) > 0:
                     trades.extend(trades_)
-                quotes = self.market.ob.price_levels.get_quotes()
+
+                self.check_k += 1
                 try:
-                    self.check_k += 1
-                    if quote_differs_pct(prev_quotes, quotes):
-                        self.quotes = quotes
-                        return trades, done
-                    elif self.check_k % self.check_time_k == 0:
+                    if self.check_k % self.check_time_k == 0:
+                        quotes = self.market.ob.price_levels.get_quotes()
+                        if quote_differs_pct(prev_quotes, quotes):
+                            self.quotes = quotes
+                            return trades, done
                         if np.datetime64(self.market.time) - self.start_time >= self.max_episode_time_delta:
                             return trades, True
                 except ZeroDivisionError as e:  # TODO why zero in quotes?
@@ -155,13 +155,11 @@ class ExternalMarketEnv(MarketEnv):
         else:
             snap = self.snap  # Fill from new snap
 
-        next_message, self.os = spy(self.os, n=1)
-        next_message = next_message[0][0]
-
-        self.start_time = np.datetime64(next_message.time)
-        self.market.time = next_message.time
-
         self.market.fill_snap(snap)
+        mess, _ = self.os.__next__()
+        self.market.send_message(mess, external=True)
+        self.start_time = np.datetime64(mess.time)
+
         self.quotes = self.market.ob.price_levels.get_quotes()
 
         obs = self.quotes

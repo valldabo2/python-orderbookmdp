@@ -4,6 +4,14 @@ orderbookmdp.data\_all package
 Submodules
 ----------
 
+orderbookmdp.data\_all.download\_gdax module
+--------------------------------------------
+
+.. automodule:: orderbookmdp.data_all.download_gdax
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 orderbookmdp.data\_all.orderstream module
 -----------------------------------------
 
