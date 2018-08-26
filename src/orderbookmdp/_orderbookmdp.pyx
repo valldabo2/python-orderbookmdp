@@ -699,8 +699,11 @@ cdef class CyExternalMarket:
 
         elif mess_type == 'change':
             if external:
-                order_id = self.external_market_order_ids[mess.order_id]
-                self.ob.update(order_id, mess.size)
+                try:
+                    order_id = self.external_market_order_ids[mess.order_id]
+                    self.ob.update(order_id, mess.size)
+                except KeyError:
+                    pass  # TODO FIX
             else:
                 self.ob.update(mess.order_id, mess.size)
 

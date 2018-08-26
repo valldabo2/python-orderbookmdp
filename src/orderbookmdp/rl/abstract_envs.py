@@ -99,6 +99,7 @@ class ExternalMarketEnv(MarketEnv):
         self.max_episode_time_delta = pd.to_timedelta(max_episode_time).to_timedelta64()
         self.check_time_k = 10
         self.check_k = 0
+        self.episode_time_reset = False
 
     def run_until_next_quote_update(self) -> (list, bool):
         """ Sends messages from the external order stream until the quotes of the market has changed.
@@ -129,6 +130,7 @@ class ExternalMarketEnv(MarketEnv):
                             self.quotes = quotes
                             return trades, done
                         if np.datetime64(self.market.time) - self.start_time >= self.max_episode_time_delta:
+                            self.episode_time_reset = True
                             return trades, True
                 except ZeroDivisionError as e:  # TODO why zero in quotes?
                     return trades, done
@@ -148,20 +150,22 @@ class ExternalMarketEnv(MarketEnv):
         """
         MarketEnv.reset(self, market=market)
 
-        if self.snap is None:  # Initial filling
-            mess, snap = self.os.__next__()
-            while snap is None:
-                mess, snap = self.os.__next__()
-        else:
-            snap = self.snap  # Fill from new snap
+        if not self.episode_time_reset:
+            if self.snap is None:  # Initial filling
+                snap = None
+                while snap is None:
+                    mess, snap = self.os.__next__()
+            else:
+                snap = self.snap  # Fill from new snap
 
-        self.market.fill_snap(snap)
+            self.market.fill_snap(snap)
+        else:
+            self.episode_time_reset = False
+
         mess, _ = self.os.__next__()
         self.market.send_message(mess, external=True)
         self.start_time = np.datetime64(mess.time)
-
         self.quotes = self.market.ob.price_levels.get_quotes()
-
         obs = self.quotes
 
         return obs

@@ -134,20 +134,18 @@ def get_dist_app():
 
     @app.callback(Output('portfolio', 'figure'), [Input('update2', 'n_intervals')])  # noqa: EF811
     def update(interval):
-        traces = []
-        traces.append(Bar(
+
+        traces = [Bar(
             x=list(app.buyorders.values()),
             y=list(app.buyorders.keys()),
             name='Buy Orders',
             orientation='h'
-        ))
-
-        traces.append(Bar(
+        ), Bar(
             x=list(app.sellorders.values()),
             y=list(app.sellorders.keys()),
             name='Sell Orders',
             orientation='h'
-        ))
+        )]
 
         if app.render_state:
             action, buy_prices, buy_sizes, sell_prices, sell_sizes = app.render_state[0:5]

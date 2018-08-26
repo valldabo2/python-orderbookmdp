@@ -19,7 +19,7 @@ def save_snapshot():
     logging.info('snapshot saved')
 
 
-class myWebsocketClient(cbpro.WebsocketClient):
+class DownloadWebsocketClient(cbpro.WebsocketClient):
     def change_file(self, msg):
         logging.info('changes file, messsage count: {}'.format(self.message_count))
         if self.file:
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     try:
         while True:
             public_client = cbpro.PublicClient()
-            wsClient = myWebsocketClient()
+            wsClient = DownloadWebsocketClient()
             wsClient.start()
             while not wsClient.error:
                 pass

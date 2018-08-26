@@ -59,14 +59,9 @@ class MultiAgentOrderEnv(MarketEnv):
             }
         """
 
-    def __init__(self, agent_list, random_agent_list=[], market_type='cyext',
-                 market_setup=dict(tick_size=0.01, ob_type='cy_order_book', price_level_type='cydeque',
-                                   price_levels_type='cylist', max_price=150, min_price=50), initial_funds=10000,
-                 episode_seconds=60):
-        super(MultiAgentOrderEnv, self).__init__(market_type, market_setup, initial_funds, T_ID=None)
-
+    def __init__(self, agent_list, random_agent_list=[], episode_seconds=60, **kwargs):
+        super(MultiAgentOrderEnv, self).__init__(**kwargs)
         self.trader_id = 1
-
         # Init random spread
         random_agent_list.append('spread_-1')
         tot_agent_list = agent_list + random_agent_list
@@ -207,8 +202,8 @@ class MultiAgentOrderEnv(MarketEnv):
 
         return trades, {}, False
 
-    def reset(self):
-        MarketEnv.reset(self)
+    def reset(self, market=None):
+        MarketEnv.reset(self, market)
 
         agent_list = list(self.agents_dict.keys())
         agent_list.remove('spread_-1')

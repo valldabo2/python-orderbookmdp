@@ -194,22 +194,58 @@ class MarketOrderEnvCumReturn(MarketOrderEnv):
         return gym.spaces.Box(low=-np.inf, high=np.inf, shape=(6,), dtype=np.float)
 
 
+class MarketOrderEnvAdjustment(MarketOrderEnv):
+    """
+    Extends the Market Order Enviroment because it uses a adjusted return instead of the return as the reward.
+
+    """
+    def __init__(self, **kwargs):
+        super(MarketOrderEnvAdjustment, self).__init__(**kwargs)
+
+    def get_reward(self, trades: list):
+        """ The reward is the adjusted return.
+
+        :math:`reward_t = return_t * \frac{cap_t}{cap_0}`
+
+        """
+        return_ = MarketOrderEnv.get_reward(self, trades)
+        return_ *= self.capital/self.initial_funds
+        return return_
+
+    def get_private_variables(self):
+        """
+
+        Returns
+        -------
+        possession : float
+        cum_return : float
+        """
+        return self.possession, self.capital/self.initial_funds
+
+    @property
+    def observation_space(self):
+        return gym.spaces.Box(low=-np.inf, high=np.inf, shape=(6,), dtype=np.float)
+
+
 if __name__ == '__main__':
-    env = MarketOrderEnvCumReturn(max_sequence_skip=150, max_episode_time='5h', random_start=False)
-    k = 0
+    env = MarketOrderEnvAdjustment(max_sequence_skip=10, max_episode_time='30min', random_start=False)
     t = time.time()
     for i in range(4):
+        k = 0
         obs = env.reset()
         done = False
+        rewards = []
         print('reset', env.market.time)
         while not done:
             action = env.action_space.sample()
-            action = 0
+            #  action = 0
             obs, reward, done, info = env.step(action)
+            rewards.append(reward)
             #  env.render()
             k += 1
-            if k % 1 == 0:
+            if k % 1000 == 0:
                 print(env.market.time, reward)
-        print('stops', env.market.time)
+        print('stops', env.market.time, sum(rewards))
+
     env.close()
     print('time', time.time() - t)

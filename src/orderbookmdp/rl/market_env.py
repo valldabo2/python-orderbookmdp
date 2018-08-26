@@ -65,7 +65,7 @@ class MarketEnv(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True
     reward_range = (-float('inf'), float('inf'))
     spec = None
 
-    def __init__(self, market_type='cyext', tick_size=0.01, ob_type='cy_order_book', price_level_type='cydeque',
+    def __init__(self, market_type='cyext', tick_size=0.01, ob_type='cy', price_level_type='cydeque',
                  price_levels_type='cylist', initial_funds=10000, T_ID=1, **kwargs):
         """
 
@@ -100,6 +100,8 @@ class MarketEnv(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True
 
         self.trades_list = []
         self.T_ID = T_ID
+
+        self.obs_shape_n = 4  # Quotes
 
     def step(self, action):
         """ Sends orders based on the agents action and receives a reward based on trades that have occurred.

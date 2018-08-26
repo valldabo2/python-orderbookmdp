@@ -26,6 +26,7 @@ def to_float(price: int, tick_dec: int, multiplier: int):
     Parameters
     ----------
     price : int
+    tick_dec: int
     multiplier : int
 
     Returns

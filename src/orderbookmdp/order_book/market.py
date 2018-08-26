@@ -95,14 +95,13 @@ class Market(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True)):
 
     @abc.abstractmethod
     def send_message(self, message: dict) -> (list, tuple):
-        """
-        The main function of the market. The market receives a message and returns a possible trade or an order in the book.
+        """ The market receives a message and returns a possible trade or an order in the book.
 
         Parameters
         ----------
         message: SimpleNamespace
-            Can for example be a limit order, market order, cancelation message etc. See :py:mod:`OrderBookRL.order_book.order_types`
-            for different types
+            Can for example be a limit order, market order, cancelation message etc.
+            See :py:mod:`OrderBookRL.order_book.order_types` for different types
 
         Returns
         -------
@@ -118,8 +117,8 @@ class Market(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True)):
 
 class ExternalMarket(Market):
     """
-    An implementation of a :py:class:`Market` which can be used with an external flow of messages. When initiated, should
-    be filled with a snapshot of the order book and then progressed with artificial or real messages.
+    An implementation of a :py:class:`Market` which can be used with an external flow of messages. When initiated,
+    should be filled with a snapshot of the order book and then progressed with artificial or real messages.
 
     Attributes
     ----------
@@ -169,7 +168,8 @@ class ExternalMarket(Market):
                 if mess.size != -1:
                     trades = self.ob.market_order(mess.size, mess.side, mess.trader_id, self.time)
                 else:
-                    trades = self.ob.market_order_funds(mess.funds*self.multiplier, mess.side, mess.trader_id, self.time)
+                    trades = self.ob.market_order_funds(mess.funds*self.multiplier, mess.side,
+                                                        mess.trader_id, self.time)
         elif mess_type == 'done':
             if mess.reason == 'canceled':
                 if external:
@@ -199,19 +199,23 @@ class ExternalMarket(Market):
 
     def fill_snap(self, snap: dict):
         """
-        Fills the market with orders from a snapshot. The snapshot contains all limit orders in a market at a given time.
+        Fills the market with orders from a snapshot. The snapshot contains all limit orders in a market
+        at a given time.
 
         Parameters
         ----------
         snap: dict
-            Contains all the limit orders in the market. Format: {'asks':[order1, order2, ...], 'bids': [order1, order2, ...]
+            Contains all the limit orders in the market.
+            Format: {'asks':[order1, order2, ...], 'bids': [order1, order2, ...]
 
         """
         for message in snap['bids']:
-            _, oib = self.ob.limit(to_int(float(message[SO_PRICE]), self.multiplier), BUY, float(message[SO_SIZE]), EXT_ID, self.time)
+            _, oib = self.ob.limit(to_int(float(message[SO_PRICE]), self.multiplier), BUY, float(message[SO_SIZE]),
+                                   EXT_ID, self.time)
             if oib is not None:
                 self.external_market_order_ids[message[SO_EXT_ID]] = oib[OIB_ID]
         for message in snap['asks']:
-            _, oib = self.ob.limit(to_int(float(message[SO_PRICE]), self.multiplier), SELL, float(message[SO_SIZE]), EXT_ID, self.time)
+            _, oib = self.ob.limit(to_int(float(message[SO_PRICE]), self.multiplier), SELL, float(message[SO_SIZE]),
+                                   EXT_ID, self.time)
             if oib is not None:
                 self.external_market_order_ids[message[SO_EXT_ID]] = oib[OIB_ID]

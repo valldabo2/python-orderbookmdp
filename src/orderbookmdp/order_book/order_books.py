@@ -49,8 +49,8 @@ def get_price_levels(price_levels_type: str, price_level_type: str, **kwargs) ->
 class OrderBook(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True)):
     """ A abstract class defining a order book interface.
 
-    The main functions are the functions for the messages. Sending a limit order, market order etc. The order book handles
-    the matching and storing of limit orders.
+    The main functions are the functions for the messages. Sending a limit order, market order etc.
+    The order book handles the matching and storing of limit orders.
 
     Important notes is the speed of adding a limit order, cancelling a limit order or updating a limit order.
 
@@ -69,9 +69,10 @@ class OrderBook(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True
         self.order_id = 0
 
     @abc.abstractmethod
-    def limit(self, price: int, side: int, size: float, trader_id: int) -> (list, tuple):
+    def limit(self, price: int, side: int, size: float, trader_id: int, time: str) -> (list, tuple):
         """
-        Handles a limit order sent to the order book. Matches the limit order if possible, otherwise puts it in the order book.
+        Handles a limit order sent to the order book. Matches the limit order if possible,
+        otherwise puts it in the order book.
 
         Parameters
         ----------
@@ -83,6 +84,7 @@ class OrderBook(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True
             Size of the order.
         trader_id: int
             Id of the trader sending the order
+        time: str
 
         Returns
         -------
@@ -96,7 +98,7 @@ class OrderBook(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True
         """
 
     @abc.abstractmethod
-    def market_order(self, size: float, side: int, trader_id: int) -> list:
+    def market_order(self, size: float, side: int, trader_id: int, time: str) -> list:
         """
         Handles a market order sent to the order book. Matches the market order if possible.
 
@@ -108,6 +110,7 @@ class OrderBook(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True
             Size of the order.
         trader_id: int
             Id of the trader sending the order
+        time: str
 
         Returns
         -------
@@ -117,7 +120,7 @@ class OrderBook(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True
         """
 
     @abc.abstractmethod
-    def market_order_funds(self, funds: float, side: int, trader_id: int) -> list:
+    def market_order_funds(self, funds: float, side: int, trader_id: int, time: str) -> list:
         """
         Handles a market order sent to the order book. Matches the market order if possible.
 
@@ -129,6 +132,7 @@ class OrderBook(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True
             BUY or SELL, see :py:mod:´OrderBookRL.order_book.constants´
         trader_id: int
             Id of the trader sending the order
+        time: str
 
         Returns
         -------
@@ -180,7 +184,8 @@ class PyOrderBook(OrderBook):
                         if size < level_entry_size:
                             price_level.update(level_entry, -size)
                             # Trade : (trader_id, counter_part_id, price, size, order_id)
-                            trades.append((trader_id, level_entry[O_TRADER_ID], ask, size, level_entry[O_ID], side, time))
+                            trades.append((trader_id, level_entry[O_TRADER_ID], ask, size,
+                                           level_entry[O_ID], side, time))
                             return trades, None
                         else:
                             price_level.delete_first(level_entry)
@@ -189,7 +194,8 @@ class PyOrderBook(OrderBook):
                                 self.price_levels.remove_level(SELL, ask)
                             size -= level_entry_size
                             # Trade : (trader_id, counter_part_id, price, size, order_id)
-                            trades.append((trader_id, level_entry[O_TRADER_ID], ask, level_entry_size, level_entry[O_ID], side, time))
+                            trades.append((trader_id, level_entry[O_TRADER_ID], ask, level_entry_size,
+                                           level_entry[O_ID], side, time))
                             if size == 0:
                                 return trades, None
 
@@ -220,7 +226,8 @@ class PyOrderBook(OrderBook):
                         if size < level_entry_size:
                             price_level.update(level_entry, -size)
                             # Trade : (trader_id, counter_part_id, price, size, order_id)
-                            trades.append((trader_id, level_entry[O_TRADER_ID], bid, size, level_entry[O_ID], side, time))
+                            trades.append((trader_id, level_entry[O_TRADER_ID], bid, size,
+                                           level_entry[O_ID], side, time))
                             return trades, None
                         else:
                             price_level.delete_first(level_entry)
@@ -229,7 +236,8 @@ class PyOrderBook(OrderBook):
                                 self.price_levels.remove_level(BUY, bid)
                             size -= level_entry_size
                             # Trade : (trader_id, counter_part_id, price, size, order_id)
-                            trades.append((trader_id, level_entry[O_TRADER_ID], bid, level_entry_size, level_entry[O_ID], side, time))
+                            trades.append((trader_id, level_entry[O_TRADER_ID], bid, level_entry_size,
+                                           level_entry[O_ID], side, time))
                             if size == 0:
                                 return trades, None
 
@@ -277,14 +285,16 @@ class PyOrderBook(OrderBook):
                     if size < level_entry_size:
                         price_level.update(level_entry, -size)
                         # Trade : (trader_id, counter_part_id, price, size, order_id)
-                        trades.append((trader_id, level_entry[O_TRADER_ID], ask, size, level_entry[O_ID], side, time))
+                        trades.append((trader_id, level_entry[O_TRADER_ID], ask, size,
+                                       level_entry[O_ID], side, time))
                         return trades
                     else:
                         price_level.delete_first(level_entry)
                         self.orders.pop(level_entry[O_ID])
                         size -= level_entry_size
                         # Trade : (trader_id, counter_part_id, price, size, order_id)
-                        trades.append((trader_id, level_entry[O_TRADER_ID], ask, level_entry_size, level_entry[O_ID], side, time))
+                        trades.append((trader_id, level_entry[O_TRADER_ID], ask, level_entry_size,
+                                       level_entry[O_ID], side, time))
                         if size == 0:
                             return trades
 
@@ -299,14 +309,16 @@ class PyOrderBook(OrderBook):
                     if size < level_entry_size:
                         price_level.update(level_entry, -size)
                         # Trade : (trader_id, counter_part_id, price, size, order_id)
-                        trades.append((trader_id, level_entry[O_TRADER_ID], bid, size, level_entry[O_ID], side, time))
+                        trades.append((trader_id, level_entry[O_TRADER_ID], bid, size,
+                                       level_entry[O_ID], side, time))
                         return trades
                     else:
                         price_level.delete_first(level_entry)
                         self.orders.pop(level_entry[O_ID])
                         size -= level_entry_size
                         # Trade : (trader_id, counter_part_id, price, size, order_id)
-                        trades.append((trader_id, level_entry[O_TRADER_ID], bid, level_entry_size, level_entry[O_ID], side, time))
+                        trades.append((trader_id, level_entry[O_TRADER_ID], bid, level_entry_size,
+                                       level_entry[O_ID], side, time))
                         if size == 0:
                             return trades
 
@@ -326,14 +338,16 @@ class PyOrderBook(OrderBook):
                     if size < level_entry_size:
                         price_level.update(level_entry, -size)
                         # Trade : (trader_id, counter_part_id, price, size, order_id)
-                        trades.append((trader_id, level_entry[O_TRADER_ID], ask, size, level_entry[O_ID], side, time))
+                        trades.append((trader_id, level_entry[O_TRADER_ID], ask, size,
+                                       level_entry[O_ID], side, time))
                         return trades
                     else:
                         price_level.delete_first(level_entry)
                         self.orders.pop(level_entry[O_ID])
                         size -= level_entry_size
                         # Trade : (trader_id, counter_part_id, price, size, order_id)
-                        trades.append((trader_id, level_entry[O_TRADER_ID], ask, level_entry_size, level_entry[O_ID], side, time))
+                        trades.append((trader_id, level_entry[O_TRADER_ID], ask, level_entry_size,
+                                       level_entry[O_ID], side, time))
                         if size == 0:
                             return trades
                         else:
@@ -351,14 +365,16 @@ class PyOrderBook(OrderBook):
                     if size < level_entry_size:
                         price_level.update(level_entry, -size)
                         # Trade : (trader_id, counter_part_id, price, size, order_id)
-                        trades.append((trader_id, level_entry[O_TRADER_ID], bid, size, level_entry[O_ID], side, time))
+                        trades.append((trader_id, level_entry[O_TRADER_ID], bid, size,
+                                       level_entry[O_ID], side, time))
                         return trades
                     else:
                         price_level.delete_first(level_entry)
                         self.orders.pop(level_entry[O_ID])
                         size -= level_entry_size
                         # Trade : (trader_id, counter_part_id, price, size, order_id)
-                        trades.append((trader_id, level_entry[O_TRADER_ID], bid, level_entry_size, level_entry[O_ID], side, time))
+                        trades.append((trader_id, level_entry[O_TRADER_ID], bid, level_entry_size,
+                                       level_entry[O_ID], side, time))
                         if size == 0:
                             return trades
                         else:

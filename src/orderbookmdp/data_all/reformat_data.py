@@ -4,6 +4,7 @@ import feather
 import numpy as np
 import pandas as pd
 import ujson
+from sortedcontainers.sortedlist import SortedList
 
 
 def reformat():
@@ -17,7 +18,8 @@ def reformat():
     except FileExistsError:
         pass
     files = os.listdir(data_dir + 'json/')  # noqa
-    snap_files = sorted([filename for filename in files if 'snaps' in filename])
+    snap_files = SortedList([filename for filename in files if 'snaps' in filename],
+                            key=lambda fn: pd.to_datetime(fn[:-11], format='%d_%m_%Y_%H_%M_%S'))
 
     for snapfile in snap_files:
         with open(data_dir + 'json/' + snapfile, 'r') as f:
@@ -30,7 +32,8 @@ def reformat():
                     ujson.dump(snap, snapf)
 
     files = os.listdir(data_dir + 'json/')  # noqa
-    mess_files = sorted([filename for filename in files if 'mess' in filename])
+    mess_files = SortedList([filename for filename in files if 'mess' in filename],
+                            key=lambda fn: pd.to_datetime(fn[:-10], format='%d_%m_%Y_%H_%M_%S'))
 
     keys = {'order_type', 'reason', 'sequence', 'side', 'size', 'type', 'price', 'funds', 'order_id', 'time'}
     price_tick = 0.01

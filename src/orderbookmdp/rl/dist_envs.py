@@ -156,7 +156,8 @@ class SpreadEnv(ExternalMarketEnv, OrderTrackingEnv):
     def adjust_orders(self, buy_sizes, buy_prices, sell_sizes, sell_prices):
         """ Creates messages so that the orders in book are updated accordingly to the prices and sizes wanted.
 
-        Creates limit orders, updates and cancellations based on the current order in books and the reuested prices and sizes.
+        Creates limit orders, updates and cancellations based on the current order in books
+        and the requested prices and sizes.
 
         Parameters
         ----------
@@ -474,18 +475,16 @@ class DistEnv(SpreadEnv):
 
 
 if __name__ == '__main__':
-    env = DistEnv(max_episode_time='4h', max_sequence_skip=150, random_start=True)
+    env = DistEnv(max_episode_time='60min', max_sequence_skip=150, random_start=True)
     for i in range(3):
         k = 0
         t = time.time()
-
         obs = env.reset()
         done = False
         print('reset', env.market.time)
         while not done:
             action = env.action_space.sample()
             obs, reward, done, info = env.step(action)
-
             k += 1
             if k % 1000 == 0:
                 print('orders per sec:{:.1f}'.format(k/(time.time()-t)))
