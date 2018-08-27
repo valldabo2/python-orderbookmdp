@@ -71,20 +71,31 @@ class DownloadWebsocketClient(cbpro.WebsocketClient):
         logging.info('{} - data: {}'.format(e, data))
 
 
-if __name__ == '__main__':
-    data_dir = '../../../data/json/'
+def download(dir, time_delta='1 min'):
+
+    time_delta = pd.to_timedelta(time_delta)
+    date_time = pd.datetime.now()
+
+    data_dir = dir + 'json/'
     try:
         os.makedirs(data_dir)
     except FileExistsError:
         pass
 
     try:
-        while True:
+        break_ = False
+        while not break_:
             public_client = cbpro.PublicClient()
             wsClient = DownloadWebsocketClient()
             wsClient.start()
             while not wsClient.error:
+                if pd.datetime.now() - date_time < time_delta:
+                    break_ = True
+                    break
                 pass
             wsClient.close()
     except KeyboardInterrupt:
         wsClient.close()
+
+if __name__ == '__main__':
+    download('../../../data/')

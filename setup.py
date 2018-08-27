@@ -73,9 +73,6 @@ setup(
     keywords=[
         # eg: 'keyword1', 'keyword2', 'keyword3',
     ],
-    install_requires=[
-        # eg: 'aspectlib==1.1.1', 'six>=1.7',
-    ],
     extras_require={
         # eg:
         #   'rst': ['docutils>=0.11'],
@@ -84,6 +81,11 @@ setup(
     setup_requires=[
         'cython',
     ] if Cython else [],
+    entry_points={
+        'console_scripts': [
+            'orderbookmdp = orderbookmdp.cli:main',
+        ]
+    },
     ext_modules=[
         Extension(
             splitext(relpath(path, 'src').replace(os.sep, '.'))[0],
