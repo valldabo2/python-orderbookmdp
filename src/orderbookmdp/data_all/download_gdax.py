@@ -6,10 +6,8 @@ import cbpro
 import pandas as pd
 import ujson
 
-logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
-
-def save_snapshot():
+def save_snapshot(public_client, data_dir):
     logging.info('downloads snapshot')
     snapshot = public_client.get_product_order_book('BTC-USD', level=3)
     date_time = datetime.datetime.now()
@@ -20,6 +18,12 @@ def save_snapshot():
 
 
 class DownloadWebsocketClient(cbpro.WebsocketClient):
+    def __init__(self, data_dir, **kwargs):
+        super(DownloadWebsocketClient, self).__init__(**kwargs)
+        self.data_dir = data_dir
+        self.datetime = datetime.datetime.now()
+        self.snapshot_time_delta = pd.to_timedelta('60min').to_pytimedelta()
+
     def change_file(self, msg):
         logging.info('changes file, messsage count: {}'.format(self.message_count))
         if self.file:
@@ -27,23 +31,22 @@ class DownloadWebsocketClient(cbpro.WebsocketClient):
         self.message_seq = msg['sequence']
         date_time = pd.to_datetime(msg['time'])
         dts = date_time.strftime('%d_%m_%Y_%H_%M_%S')
-        self.file = open(data_dir + dts + '_mess.json', 'w')
+        self.file = open(self.data_dir + dts + '_mess.json', 'w')
 
     def on_open(self):
         self.url = "wss://ws-feed.pro.coinbase.com/"
-        self.products = ["BTC-USD"]
+        logging.info('Downloads product:{}'.format(self.products))
         self.message_count = 0
-        self.datetime = datetime.datetime.now()
-        self.snapshot_time_delta = pd.to_timedelta('60min').to_pytimedelta()
         self.file = None
-        save_snapshot()
+        self.public_client = cbpro.PublicClient()
+        save_snapshot(self.public_client, self.data_dir)
 
     def on_message(self, msg):
 
         if self.message_count % 10000 == 0:
             logging.info('message count: {}'.format(self.message_count))
 
-        if self.message_count % 1000000 == 0:
+        if self.message_count % 5000000 == 0:
             self.change_file(msg)
         self.file.write(ujson.dumps(msg) + '\n')
         self.message_count += 1
@@ -71,25 +74,32 @@ class DownloadWebsocketClient(cbpro.WebsocketClient):
         logging.info('{} - data: {}'.format(e, data))
 
 
-def download(dir, time_delta='1 min'):
+def download(dir, time_delta='1 min', product='BTC-USD'):
 
     time_delta = pd.to_timedelta(time_delta)
     date_time = pd.datetime.now()
 
-    data_dir = dir + 'json/'
+    data_dir = dir + '/json/'
     try:
         os.makedirs(data_dir)
     except FileExistsError:
         pass
 
+    print('Downloads to dir:' + data_dir)
+
+    logging.basicConfig(handlers=[
+                            logging.FileHandler(dir + '/logs.log'),
+                            logging.StreamHandler()
+                        ],
+                        format='%(asctime)s %(message)s',
+                        level=logging.INFO)
     try:
         break_ = False
         while not break_:
-            public_client = cbpro.PublicClient()
-            wsClient = DownloadWebsocketClient()
+            wsClient = DownloadWebsocketClient(data_dir=data_dir, products=[product])
             wsClient.start()
             while not wsClient.error:
-                if pd.datetime.now() - date_time < time_delta:
+                if pd.datetime.now() - date_time > time_delta:
                     break_ = True
                     break
                 pass
@@ -97,5 +107,6 @@ def download(dir, time_delta='1 min'):
     except KeyboardInterrupt:
         wsClient.close()
 
+
 if __name__ == '__main__':
-    download('../../../data/')
+    download('../../../data')

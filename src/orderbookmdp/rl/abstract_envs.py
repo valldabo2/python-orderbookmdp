@@ -90,8 +90,8 @@ class ExternalMarketEnv(MarketEnv):
         If the env has been filled by a snapshot
     """
 
-    def __init__(self, max_episode_time='10days',
-                 order_paths='../../../data/feather/', snapshot_paths='../../../data/snap_json/', **kwargs):
+    def __init__(self, max_episode_time='10days', order_paths='../../../data/feather/',
+                 snapshot_paths='../../../data/snap_json/', taker_fee=0.002, **kwargs):
         super(ExternalMarketEnv, self).__init__(**kwargs)
         self.os = orderstream(order_paths, snapshot_paths, **kwargs)
         self.filled = False
@@ -100,6 +100,7 @@ class ExternalMarketEnv(MarketEnv):
         self.check_time_k = 10
         self.check_k = 0
         self.episode_time_reset = False
+        self.taker_fee = taker_fee
 
     def run_until_next_quote_update(self) -> (list, bool):
         """ Sends messages from the external order stream until the quotes of the market has changed.

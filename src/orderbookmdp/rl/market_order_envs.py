@@ -65,11 +65,11 @@ class MarketOrderEnv(ExternalMarketEnv):
             if trade[T_ID] == self.T_ID:
                 if trade[T_SIDE] == BUY:
                     self.funds -= trade[T_SIZE] * trade[T_PRICE] / self.market.multiplier
-                    self.possession += trade[T_SIZE]
+                    self.possession += trade[T_SIZE]*(1-self.taker_fee)
                     self.trades_list.append([trade[T_TIME], trade[T_SIZE], trade[T_PRICE], BUY])
                 else:
                     self.funds += trade[T_SIZE] * trade[T_PRICE] / self.market.multiplier
-                    self.possession -= trade[T_SIZE]
+                    self.possession -= trade[T_SIZE]*(1-self.taker_fee)
                     self.trades_list.append([trade[T_TIME], trade[T_SIZE], trade[T_PRICE], SELL])
 
         theo_sell_price = self.quotes[Q_BID] / self.market.multiplier
@@ -228,7 +228,7 @@ class MarketOrderEnvAdjustment(MarketOrderEnv):
 
 
 if __name__ == '__main__':
-    env = MarketOrderEnvAdjustment(max_sequence_skip=10, max_episode_time='30min', random_start=False)
+    env = MarketOrderEnv(max_sequence_skip=10000, max_episode_time='12hours', random_start=False)
     t = time.time()
     for i in range(4):
         k = 0
@@ -243,7 +243,7 @@ if __name__ == '__main__':
             rewards.append(reward)
             #  env.render()
             k += 1
-            if k % 1000 == 0:
+            if k % 1 == 0:
                 print(env.market.time, reward)
         print('stops', env.market.time, sum(rewards))
 

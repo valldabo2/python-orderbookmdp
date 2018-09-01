@@ -36,6 +36,14 @@ orderbookmdp.rl.env\_utils module
     :undoc-members:
     :show-inheritance:
 
+orderbookmdp.rl.gdax\_envs module
+---------------------------------
+
+.. automodule:: orderbookmdp.rl.gdax_envs
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 orderbookmdp.rl.market\_env module
 ----------------------------------
 

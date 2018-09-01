@@ -16,16 +16,20 @@ Why does this file exist, and why not put this in __main__?
 """
 import argparse
 
+from orderbookmdp.data_all.download_gdax import download
+from orderbookmdp.data_all.reformat_data import reformat
+
 parser = argparse.ArgumentParser(description='Either downloads or reformats data from a directory.')
 
 parser.add_argument('command', choices=['download', 'reformat'])
-parser.add_argument('--download_time', )
-parser.add_argument('dir', help='The directory to download or reformat')
+parser.add_argument('--download_time', type=str, default='10000 days', help='Time to download')
+parser.add_argument('--dir', default='data', help='The directory to download or reformat')
+parser.add_argument('--product', default='BTC-USD', help='The product to download')
 
 
 def main(args=None):
     args = parser.parse_args(args=args)
-
-    print(args)
     if args.command == 'download':
-
+        download(args.dir, args.download_time, args.product)
+    elif args.command == 'reformat':
+        reformat(args.dir)

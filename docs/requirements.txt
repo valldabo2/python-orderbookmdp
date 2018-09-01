@@ -15,4 +15,5 @@ dash-core-components
 numba
 feather-format
 cbpro
+tqdm
 -e .

@@ -57,7 +57,6 @@ def orderstream(order_paths='../../../data/feather/', snapshot_paths='../../../d
 
     order_paths = order_paths
     snapshot_paths = snapshot_paths
-
     order_files = os.listdir(order_paths)
     snap_files = os.listdir(snapshot_paths)
 

@@ -10,6 +10,18 @@ Subpackages
     orderbookmdp.order_book
     orderbookmdp.rl
 
+Submodules
+----------
+
+orderbookmdp.cli module
+-----------------------
+
+.. automodule:: orderbookmdp.cli
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 Module contents
 ---------------
 
