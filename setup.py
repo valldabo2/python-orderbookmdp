@@ -38,6 +38,9 @@ if 'TOXENV' in os.environ and 'SETUPPY_CFLAGS' in os.environ:
     os.environ['CFLAGS'] = os.environ['SETUPPY_CFLAGS']
 
 
+with open('docs/requirements.txt') as f:
+    required = f.read().splitlines()[:-1]
+
 setup(
     name='orderbookmdp',
     version='0.1.2',
@@ -95,4 +98,5 @@ setup(
         for root, _, _ in os.walk('src')
         for path in glob(join(root, '*.pyx' if Cython else '*.c'))
     ],
+    install_requires=required
 )
