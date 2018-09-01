@@ -22,7 +22,7 @@ class DownloadWebsocketClient(cbpro.WebsocketClient):
         super(DownloadWebsocketClient, self).__init__(**kwargs)
         self.data_dir = data_dir
         self.datetime = datetime.datetime.now()
-        self.snapshot_time_delta = pd.to_timedelta('60min').to_pytimedelta()
+        self.snapshot_time_delta = pd.to_timedelta('60minutes').to_pytimedelta()
 
     def change_file(self, msg):
         logging.info('changes file, messsage count: {}'.format(self.message_count))
@@ -56,11 +56,11 @@ class DownloadWebsocketClient(cbpro.WebsocketClient):
             logging.info('missed sequences: {}'.format(mess_seq - self.message_seq))
             save_snapshot()
 
-        if self.message_count % 1000 == 0:
+        if self.message_count % 1 == 0:
             now = datetime.datetime.now()
             if now - self.datetime > self.snapshot_time_delta:
                 logging.info('saves snapshot timedelta')
-                save_snapshot()
+                save_snapshot(self.public_client, self.data_dir)
                 self.datetime = now
 
         self.message_seq = mess_seq

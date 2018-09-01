@@ -4,19 +4,20 @@ from decimal import Decimal
 
 import cbpro
 from cbpro.websocket_client import WebsocketClient
+from cbpro.authenticated_client import AuthenticatedClient
 from sortedcontainers.sorteddict import SortedDict
 
 
 class GdaxOrderBook(WebsocketClient):
-    def __init__(self, **kwargs):
+    def __init__(self, product='BTC-USD', **kwargs):
         super(GdaxOrderBook, self).__init__(**kwargs)
         self.public_client = cbpro.PublicClient()
+        self.products = [product]
         self.asks = None
         self.message_count = 0
 
     def on_open(self):
         self.url = "wss://ws-feed.pro.coinbase.com/"
-        self.products = ["BTC-USD"]
         self.channels = ['level2']
 
     def on_message(self, msg):
@@ -57,8 +58,18 @@ class GdaxOrderBook(WebsocketClient):
         logging.info('{} - data: {}'.format(e, data))
 
 
-if __name__ == '__main__':
-    ws = GdaxOrderBook()
+class GdaxMarket:
+    def __init__(self, product, **kwargs):
+        self.ob = GdaxOrderBook(product, **kwargs)
+
+
+class GdaxEnv:
+    def __init__(self, product, **kwargs):
+        self.market = GdaxMarket(product, **kwargs)
+        self.auth_client =
+
+def run_order_book():
+    ws = GdaxOrderBook(product='BTC-USD')
     ws.start()
     t = time.time()
     time.sleep(1)
@@ -66,3 +77,6 @@ if __name__ == '__main__':
         if ws.message_count > 0:
             print(ws.get_quotes())
     ws.close()
+
+if __name__ == '__main__':
+    run_order_book()
