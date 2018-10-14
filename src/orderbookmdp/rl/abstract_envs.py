@@ -13,6 +13,7 @@ from orderbookmdp.order_book.order_books import get_price_levels
 from orderbookmdp.rl.env_utils import quote_differs  # noqa
 from orderbookmdp.rl.env_utils import quote_differs_pct
 from orderbookmdp.rl.market_env import MarketEnv
+import logging
 
 
 class OrderTrackingEnv(MarketEnv):
@@ -91,7 +92,7 @@ class ExternalMarketEnv(MarketEnv):
     """
 
     def __init__(self, max_episode_time='10days', order_paths='../../../data/feather/',
-                 snapshot_paths='../../../data/snap_json/', taker_fee=0.002, **kwargs):
+                 snapshot_paths='../../../data/snap_json/', taker_fee=0.002, min_capital_pct=0.00, **kwargs):
         super(ExternalMarketEnv, self).__init__(**kwargs)
         self.os = orderstream(order_paths, snapshot_paths, **kwargs)
         self.filled = False
@@ -101,6 +102,9 @@ class ExternalMarketEnv(MarketEnv):
         self.check_k = 0
         self.episode_time_reset = False
         self.taker_fee = taker_fee
+        self.min_capital_pct = min_capital_pct
+        self.prev_buying_power = 1
+        self.init_buying_power = 1
 
     def run_until_next_quote_update(self) -> (list, bool):
         """ Sends messages from the external order stream until the quotes of the market has changed.
@@ -112,29 +116,36 @@ class ExternalMarketEnv(MarketEnv):
 
         """
         trades = []
-        done = False
-        prev_quotes = self.market.ob.price_levels.get_quotes()
+        self.prev_quotes = self.market.ob.price_levels.get_quotes()
         for mess, snap in self.os:
             if snap is not None:  # Should return done and save snap to next reset
                 self.snap = snap
+                #logging.info('cap/init_cap:{:.2f} bp/init_bp:{:.2f}'.format(self.capital / self.initial_funds,
+                #                                                       self.prev_buying_power / self.init_buying_power))
                 return [], True
             else:
                 trades_, oib = self.market.send_message(mess, external=True)
                 if len(trades_) > 0:
                     trades.extend(trades_)
-
                 self.check_k += 1
                 try:
                     if self.check_k % self.check_time_k == 0:
-                        quotes = self.market.ob.price_levels.get_quotes()
-                        if quote_differs_pct(prev_quotes, quotes):
-                            self.quotes = quotes
-                            return trades, done
-                        if np.datetime64(self.market.time) - self.start_time >= self.max_episode_time_delta:
+                        self.quotes = self.market.ob.price_levels.get_quotes()
+                        if self.capital / self.initial_funds < self.min_capital_pct:
                             self.episode_time_reset = True
+                            #logging.info('cap/init_cap:{:.2f} bp/init_bp:{:.2f}'.format(self.capital / self.initial_funds,
+                            #                                                     self.prev_buying_power/self.init_buying_power))
                             return trades, True
+                        elif np.datetime64(self.market.time) - self.start_time >= self.max_episode_time_delta:
+                            self.episode_time_reset = True
+                            #logging.info('cap/init_cap:{:.2f} bp/init_bp:{:.2f}'.format(self.capital / self.initial_funds,
+                            #                                                     self.prev_buying_power/self.init_buying_power))
+                            return trades, True
+                        elif quote_differs_pct(self.prev_quotes, self.quotes):
+                            return trades, False
+
                 except ZeroDivisionError as e:  # TODO why zero in quotes?
-                    return trades, done
+                    return trades, False
 
     def reset(self, market=None):
         """ Resets the market with a new snapshot.

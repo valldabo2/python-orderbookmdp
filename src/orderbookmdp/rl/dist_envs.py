@@ -269,7 +269,7 @@ class SpreadEnv(ExternalMarketEnv, OrderTrackingEnv):
         """
         return ()
 
-    def get_reward(self, trades: list) -> float:
+    def get_reward(self, trades: list, done=False) -> float:
         """ Calculates the reward based on the trades that has occured.
 
         The reward is calculated based on previous trades and the current trades. If a buy trade has occurred, the

@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import requests
 from custom_inherit import DocInheritMeta
+import logging
 
 from orderbookmdp._orderbookmdp import CyExternalMarket
 from orderbookmdp.order_book.constants import BUY
@@ -90,7 +91,6 @@ class MarketEnv(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True
         self.capital = initial_funds
         self.funds = initial_funds
         self.initial_funds = initial_funds
-        self.possession = 0
 
         # Rendering
         self.render_app = None
@@ -125,7 +125,7 @@ class MarketEnv(metaclass=DocInheritMeta(style="numpy", abstract_base_class=True
         """
         messages = self.get_messages(action)
         trades, done, info = self.send_messages(messages)
-        reward = self.get_reward(trades)
+        reward = self.get_reward(trades, done)
         obs = self.get_obs()
         return obs, reward, done, info
 

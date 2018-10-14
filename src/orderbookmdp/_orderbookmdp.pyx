@@ -415,7 +415,7 @@ cdef class CyOrderBook:
         self.order_id = 0
         self.price_levels = CyListPriceLevels(price_level_type, **kwargs)
 
-    def limit(self, long int price, int side, double size, int trader_id, str time):
+    cpdef limit(self, long int price, int side, double size, int trader_id, str time):
 
         cdef list trades = []
 
@@ -570,7 +570,7 @@ cdef class CyOrderBook:
 
         return trades
 
-    def market_order_funds(self, double funds, int side, int trader_id, str time):
+    cpdef market_order_funds(self, double funds, int side, int trader_id, str time):
         trades = []
         if side == BUY:
             while (funds > 0) and self.price_levels.exist_sell_orders():
