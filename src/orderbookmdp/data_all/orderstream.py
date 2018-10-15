@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import ujson
 from sortedcontainers.sortedlist import SortedList
+import feather
 
 MESSAGE_TYPES = {'received', 'done', 'change'}
 
@@ -29,7 +30,7 @@ def load_orders(path):
     """
 
     # TODO, test appending multiple order dataframes for faster loading?
-    df = pd.read_feather(path)
+    df = feather.read_dataframe(path)
     for order in df.itertuples():
         yield order
 
