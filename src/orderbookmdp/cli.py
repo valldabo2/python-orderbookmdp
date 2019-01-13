@@ -25,11 +25,11 @@ parser.add_argument('command', choices=['download', 'reformat'])
 parser.add_argument('--download_time', type=str, default='10000 days', help='Time to download')
 parser.add_argument('--dir', default='data', help='The directory to download or reformat')
 parser.add_argument('--product', default='BTC-USD', help='The product to download')
-
+parser.add_argument('--cores', default=1, type=int, help='Number of cores to use for reformating')
 
 def main(args=None):
     args = parser.parse_args(args=args)
     if args.command == 'download':
         download(args.dir, args.download_time, args.product)
     elif args.command == 'reformat':
-        reformat(args.dir)
+        reformat(args.dir, args.cores)
